@@ -1,0 +1,37 @@
+{
+  "metrics": {
+    "silhouette_score": 0.7823329125274517,
+    "calinski_harabasz_score": 2819.3165943664817,
+    "adjusted_rand_score": 0.00726725027882272
+  },
+  "clusters": {
+    "Cluster_0": {
+      "cluster_id": 0,
+      "count": 3527,
+      "dominant_ground_truth": "Technology",
+      "auto_generated_title": "Topic: Technology",
+      "sample_snippet": "The first and only thing I've ever tried to auto-trace was a piece of a USCG nautical chart using Adobe Illustrator 3.2."
+    },
+    "Cluster_1": {
+      "cluster_id": 1,
+      "count": 126,
+      "dominant_ground_truth": "Sports",
+      "auto_generated_title": "Topic: Sports",
+      "sample_snippet": "Coaching staff implements strategic defensive maneuvers ahead of upcoming tournament match. Additional details regarding"
+    },
+    "Cluster_2": {
+      "cluster_id": 2,
+      "count": 221,
+      "dominant_ground_truth": "Science",
+      "auto_generated_title": "Topic: Science",
+      "sample_snippet": "Cybersecurity researchers discover vulnerabilities in cloud database encryption protocols. Additional details regarding "
+    },
+    "Cluster_3": {
+      "cluster_id": 3,
+      "count": 126,
+      "dominant_ground_truth": "Politics/World",
+      "auto_generated_title": "Topic: Politics/World",
+      "sample_snippet": "Diplomats sign historic peace treaty to establish regional stability and cross-border cooperation. Additional details re"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+torch
+transformers
+peft
+datasets
+sentence-transformers
+umap-learn
+scikit-learn
+numpy
+pandas
+matplotlib
+seaborn
+requests
+beautifulsoup4
+accelerate
