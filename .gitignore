@@ -6,3 +6,18 @@ env/
 venv/
 .idea/
 .vscode/
+
+# Node & Build artifacts
+node_modules/
+**/node_modules/
+.next/
+**/.next/
+dist/
+build/
+
+# Database & Logs
+*.db
+*.log
+.env
+.env.local
+
