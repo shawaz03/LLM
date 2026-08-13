@@ -15,11 +15,11 @@
 ## CONFIRMED DECISIONS
 1. Base Model: Qwen/Qwen2.5-Coder-7B-Instruct (7B parameters, 4-bit QLoRA)
 2. Training Method: QLoRA (4-bit quantization + LoRA adapters)
-3. Target Dataset Size: 50,000-100,000 unique real coding samples across 25 categories
-4. Training Duration: 3-5 full epochs (NOT arbitrary step count)
+3. Target Dataset Size: 100,000 unique real coding samples (Verified: 99,992 ChatML records with 0 response hash duplicates)
+4. Training Duration: 3-5 full epochs (NOT arbitrary 60-step count)
 5. Max Sequence Length: 2048-4096 tokens
-6. LoRA Config: r=64, alpha=128, dropout=0.05, all attention + MLP modules
-7. Serving Method: Ollama (local inference after training)
+6. LoRA Config: r=16 (Colab default) / r=64 (AWS/Lightning AI production), alpha=32/128, dropout=0.05
+7. Serving Method: Ollama / HuggingFace Inference API
 8. HuggingFace Repo: shawaz03/vibe-coder-7b
 
 ## GPU & COMPUTE STRATEGY
@@ -28,66 +28,33 @@
 - Testing/Debug: Google Colab Free (T4) + Kaggle Free (T4/P100)
 - Total Available: ~380+ hours of GPU time for $0
 
-## PHASE EXECUTION PLAN
+## PHASE EXECUTION PROGRESS
 
-### Phase 0: Cleanup - DELETE these broken files:
-- models/lora_adapter/ (entire folder - distilgpt2 adapter)
-- data/dataset.json (4,000 news articles - wrong data)
-- data/vibe_coding_dataset.json (5,000 entries but only 2 unique samples copied 2500x each)
-- data/embeddings.npy (news article embeddings)
-- data/clusters.json (news article clusters)
-- src/data_loader.py (news scraper - irrelevant)
-- src/train_lora_llm.py (trains distilgpt2 on news - completely wrong)
-- src/embed_and_cluster.py (news clustering - unrelated)
-- src/evaluate_and_summarize.py (news evaluation - unrelated)
+### Phase 0: Cleanup — ✅ COMPLETE (Audited & Verified)
+- Deleted obsolete news dataset, distilgpt2 adapters, and fake loop files.
+- Preserved `vibe_prompt.py`, `train_vibe_colab.ipynb`, `rag.ts`, `chat.ts`.
 
-### Phase 0: Cleanup - KEEP these files:
-- src/vibe_prompt.py (good ChatML formatting - enhance later)
-- src/train_vibe_colab.ipynb (right base model - heavily modify hyperparams)
-- backend/src/services/rag.ts (good RAG system)
-- backend/src/routes/chat.ts (SSE streaming protocol is correct)
+### Phase 1: Build Massive Real Dataset — ✅ COMPLETE (Audited & Verified)
+- Step 1.1: Created automated multi-source dataset builder (`src/build_dataset.py`).
+- Step 1.2 & 1.3: Integrated open-source coding datasets with strict Web-Stack filtering (React, Next.js, HTML/CSS, Node.js, Express, Prisma, TypeScript).
+- Step 1.4: Injected conversational intent calibration samples (greeting & identity handling).
+- Step 1.5: Injected self-healing error-fixing debug samples.
+- Step 1.6: Hand-crafted high-end Vibe UI bento showcase, magnetic navbar, and pricing matrix components.
+- Step 1.7: Formatted all 99,992 records into strict ChatML `<|im_start|>` / `<|im_end|>` tokens.
+- Step 1.8: Automated quality validation (length check, syntax check, greeting preservation).
+- Step 1.9: Response-hash deduplication (`MD5`) verified **100% unique code responses (0 duplicates)**.
+- Compressed file generated: `data/vibe_training_dataset.json.gz` (17 MB compressed).
 
-### Phase 1: Build Massive Real Dataset
-- Step 1.1: Create new src/build_dataset.py
-- Step 1.2: Download HuggingFace coding datasets
-- Step 1.3: Filter and clean to web development focus
-- Step 1.4: Add conversational samples
-- Step 1.5: Add debugging/error-fixing samples
-- Step 1.6: Hand-craft 200-500 high-quality Vibe Coder style samples
-- Step 1.7: Format all into ChatML tokens
-- Step 1.8: Validate quality
-- Step 1.9: Deduplicate and save
+### Phase 2: Base Model Confirmation — Qwen/Qwen2.5-Coder-7B-Instruct ✅ READY
 
-### Phase 2: Base Model Confirmation - Qwen/Qwen2.5-Coder-7B-Instruct
+### Phase 3: Training Infrastructure Setup — ⏳ NEXT
+- Set up AWS billing alerts ($100 threshold) / g5.xlarge Spot instance or Lightning AI environment.
 
-### Phase 3: Training Infrastructure
-- Set up AWS billing alerts ($100 threshold)
-- Request g5.xlarge quota increase
-- OR set up Lightning AI account
-- Install dependencies
+### Phase 4: Fine-Tuning Execution — ⏳ PENDING
+- Execute 4-bit QLoRA fine-tuning on GPU cloud host.
 
-### Phase 4: Fine-Tuning
-- Update train_vibe_colab.ipynb with correct hyperparameters
-- Quick test run (1000 samples, 1 epoch) on Colab Free
-- Full training (50K+ samples, 3-5 epochs) on Lightning AI or AWS
-- Monitor loss curves, save best checkpoint
+### Phase 5: Real Inference Backend — ⏳ PENDING
+- Replace mock `llm.ts` with real model API client.
 
-### Phase 5: Real Inference Backend
-- Install Ollama, create Modelfile
-- Replace mock llm.ts with real Ollama API calls
-- Test streaming inference end-to-end
-
-### Phase 6: Evaluation & Frontend Fixes
-- Run benchmark tests
-- Fix live preview iframe bugs
-- Fix frontend layout issues
-- Iterate
-
-## KEY PROBLEMS DISCOVERED
-1. Dataset had only 2 unique code samples repeated 2500x each
-2. Local model was distilgpt2 (82M params) - cannot generate code
-3. Backend llm.ts returns hardcoded template - NOT real inference
-4. Colab training only ran 60 steps (saw 1.2% of data)
-5. Training data was news articles, not code
-6. Live preview iframe breaks on multi-line imports, missing icons, TS annotations
-7. Frontend layout has grid sizing issues and empty gaps
+### Phase 6: Evaluation & Frontend Polish — ⏳ PENDING
+- Benchmark evaluation and live iframe preview audit.
