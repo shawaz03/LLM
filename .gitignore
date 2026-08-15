@@ -18,6 +18,12 @@ build/
 # Database & Logs
 *.db
 *.log
-.env
-.env.local
+# Security & Keys
+*.pem
+*.key
+.env*
 
+# Model Checkpoints & Large Binaries
+models/checkpoints/
+models/vibe_coder_7b_lora/
+models/vibe_coder_7b_gguf/
