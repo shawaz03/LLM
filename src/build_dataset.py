@@ -2,17 +2,17 @@ import os, sys, json, re, hashlib, random, argparse
 from typing import List, Dict, Any, Tuple
 
 SYSTEM_PROMPT = (
-    "You are Vibe Coder, a world-class principal full-stack software engineer and UI/UX designer.\n"
-    "STRICT ANTI-AI AESTHETIC & GENERATION DIRECTIVES:\n"
-    "1. ZERO PLACEHOLDERS: ALWAYS output 100% complete, runnable code. NEVER use placeholders like '// TODO', '// implement here', '...', or '// rest of code'.\n"
-    "2. ANTI-AI AESTHETICS: Never output generic AI template tropes. Use bespoke asymmetric bento grids, noise/grain overlays, custom typography, and magnetic hover physics.\n"
-    "3. ANIMATION & UI STACK: Combine Next.js 15 App Router, React 19, Tailwind CSS, Shadcn UI, Framer Motion, GSAP, Aceternity UI, and Magic UI.\n"
-    "4. BACKEND STACK: Use Node.js, Prisma ORM, JWT authentication, and clean error handling.\n"
+    "You are Vibe Coder, a world-class principal full-stack software engineer and UI/UX designer.\\n"
+    "STRICT ANTI-AI AESTHETIC & GENERATION DIRECTIVES:\\n"
+    "1. ZERO PLACEHOLDERS: ALWAYS output 100% complete, runnable code. NEVER use placeholders like '// TODO', '// implement here', '...', or '// rest of code'.\\n"
+    "2. ANTI-AI AESTHETICS: Never output generic AI template tropes. Use bespoke asymmetric bento grids, noise/grain overlays, custom typography, and magnetic hover physics.\\n"
+    "3. ANIMATION & UI STACK: Combine Next.js 15 App Router, React 19, Tailwind CSS, Shadcn UI, Framer Motion, GSAP, Aceternity UI, and Magic UI.\\n"
+    "4. BACKEND STACK: Use Node.js, Prisma ORM, JWT authentication, and clean error handling.\\n"
     "5. TYPE SAFETY & CLEAN CODE: Include full TypeScript interfaces, prop types, and export default declarations."
 )
 
 CONVERSATIONAL_SYSTEM_PROMPT = (
-    "You are Vibe Coder, an intelligent, friendly AI full-stack development assistant.\n"
+    "You are Vibe Coder, an intelligent, friendly AI full-stack development assistant.\\n"
     "Provide clear, concise, professional answers. Only generate code blocks when the user explicitly requests code or technical implementation."
 )
 
@@ -21,33 +21,204 @@ HANDCRAFTED_SAMPLES = [
         "instruction": "Create a high-end bespoke feature showcase section in Next.js 15 using GSAP ScrollTrigger timeline, Space Grotesk typography, and bespoke Bento Grid layout.",
         "category": "gsap_scrolltrigger_bento",
         "system": SYSTEM_PROMPT,
-        "response": """'use client';\nimport React, { useEffect, useRef } from 'react';\nimport gsap from 'gsap';\nimport { ScrollTrigger } from 'gsap/ScrollTrigger';\nimport { Cpu, ShieldCheck, Zap } from 'lucide-react';\ngsap.registerPlugin(ScrollTrigger);\nexport default function BespokeBentoShowcase() {\n  return <div className="text-white">Showcase</div>;\n}"""
+        "response": """'use client';
+import React, { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Cpu, ShieldCheck, Zap } from 'lucide-react';
+
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
+
+export default function BespokeBentoShowcase() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const ctx = gsap.context(() => {
+      gsap.from('.bento-card', {
+        y: 60,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.15,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: 'top 80%',
+        }
+      });
+    }, containerRef);
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <section ref={containerRef} className="py-24 bg-neutral-950 text-white px-6">
+      <div className="max-w-6xl mx-auto space-y-12">
+        <div className="space-y-4 text-center">
+          <span className="text-xs uppercase tracking-widest text-emerald-400 font-mono">Architecture v4</span>
+          <h2 className="text-4xl font-extrabold tracking-tight font-sans sm:text-5xl">Engineered for Extreme Velocity</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bento-card p-8 rounded-2xl bg-neutral-900/80 border border-neutral-800 backdrop-blur-xl relative overflow-hidden group">
+            <Zap className="w-8 h-8 text-amber-400 mb-4" />
+            <h3 className="text-xl font-bold mb-2">Sub-millisecond Edge Compute</h3>
+            <p className="text-neutral-400 text-sm leading-relaxed">Global state propagation under 15ms via distributed Cloudflare workers and optimistic client caching.</p>
+          </div>
+          <div className="bento-card p-8 rounded-2xl bg-neutral-900/80 border border-neutral-800 backdrop-blur-xl relative overflow-hidden group md:col-span-2">
+            <Cpu className="w-8 h-8 text-cyan-400 mb-4" />
+            <h3 className="text-xl font-bold mb-2">Autonomous Self-Healing Query Engine</h3>
+            <p className="text-neutral-400 text-sm leading-relaxed">Dynamic SQL optimization with automated index generation, proactive deadlock avoidance, and live read-replica routing.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}"""
     },
     {
         "instruction": "Design a bespoke, non-generic navigation header in React 19 with magnetic cursor hover dynamics and custom blur drop shadow.",
         "category": "bespoke_ui_nav",
         "system": SYSTEM_PROMPT,
-        "response": """'use client';\nimport React, { useState } from 'react';\nimport { motion } from 'framer-motion';\nexport default function BespokeNavbar() {\n  return <header>Navbar</header>;\n}"""
+        "response": """'use client';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Layers, Terminal, Sparkles, ArrowUpRight } from 'lucide-react';
+
+export default function BespokeNavbar() {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+  const links = [
+    { label: 'Platform', icon: Layers },
+    { label: 'CLI Tools', icon: Terminal },
+    { label: 'Changelog', icon: Sparkles },
+  ];
+
+  return (
+    <header className="fixed top-6 left-1/2 -translate-x-1/2 z-50">
+      <nav className="flex items-center gap-2 p-2 rounded-full bg-neutral-900/80 border border-neutral-800/80 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+        <div className="flex items-center gap-6 px-4 py-1 text-sm">
+          <span className="font-mono font-bold tracking-wider text-emerald-400">VIBE//OS</span>
+          {links.map((link, idx) => (
+            <button
+              key={link.label}
+              onMouseEnter={() => setHoveredIndex(idx)}
+              onMouseLeave={() => setHoveredIndex(null)}
+              className="relative px-3 py-1.5 text-neutral-300 hover:text-white transition-colors flex items-center gap-2"
+            >
+              {hoveredIndex === idx && (
+                <motion.span
+                  layoutId="nav-glow"
+                  className="absolute inset-0 rounded-full bg-neutral-800/90 -z-10"
+                  transition={{ type: 'spring', bounce: 0.2, duration: 0.5 }}
+                />
+              )}
+              <link.icon className="w-3.5 h-3.5" />
+              <span>{link.label}</span>
+            </button>
+          ))}
+        </div>
+        <button className="px-5 py-2 rounded-full bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-semibold text-xs transition-all flex items-center gap-1 shadow-lg shadow-emerald-500/20">
+          <span>Deploy</span>
+          <ArrowUpRight className="w-3.5 h-3.5" />
+        </button>
+      </nav>
+    </header>
+  );
+}"""
     },
     {
         "instruction": "Build an Awwwards-level interactive pricing table with annual discount toggle, glowing brass borders, and glassmorphic card design.",
         "category": "bespoke_pricing_table",
         "system": SYSTEM_PROMPT,
-        "response": """'use client';\nimport React, { useState } from 'react';\nimport { motion } from 'framer-motion';\nimport { Check, Sparkles, ArrowRight } from 'lucide-react';\nexport default function BespokePricing() {\n  return <div>Pricing</div>;\n}"""
+        "response": """'use client';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Check, Sparkles, ArrowRight } from 'lucide-react';
+
+export default function BespokePricing() {
+  const [annual, setAnnual] = useState(true);
+
+  const tiers = [
+    { name: 'Developer', price: annual ? 19 : 24, desc: 'For solo creators and builders', features: ['5 Workspaces', '100k API req/mo', 'Community Support', 'Edge CDN Deployment'] },
+    { name: 'Scale Pro', price: annual ? 79 : 99, popular: true, desc: 'For high-growth software teams', features: ['Unlimited Workspaces', '5M API req/mo', 'Dedicated 24/7 Slack support', 'Custom Domains & SSL', 'SOC2 Compliance Pack'] },
+    { name: 'Enterprise', price: annual ? 299 : 349, desc: 'Dedicated cloud infrastructure', features: ['Isolated VPC Clusters', 'Unlimited Volume', 'SLA 99.99% Guarantee', 'Custom Model Fine-tuning'] },
+  ];
+
+  return (
+    <section className="py-24 bg-neutral-950 text-white px-6">
+      <div className="max-w-6xl mx-auto space-y-16 text-center">
+        <div className="space-y-4">
+          <h2 className="text-4xl font-extrabold tracking-tight sm:text-5xl">Transparent, Scale-Driven Pricing</h2>
+          <div className="flex items-center justify-center gap-3 mt-6">
+            <span className={`text-sm ${!annual ? 'text-white' : 'text-neutral-400'}`}>Monthly</span>
+            <button
+              onClick={() => setAnnual(!annual)}
+              className="w-14 h-8 rounded-full bg-neutral-800 p-1 transition-colors relative"
+            >
+              <div className={`w-6 h-6 rounded-full bg-emerald-400 transition-transform ${annual ? 'translate-x-6' : 'translate-x-0'}`} />
+            </button>
+            <span className={`text-sm flex items-center gap-1.5 ${annual ? 'text-white font-medium' : 'text-neutral-400'}`}>
+              Annual <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30">Save 20%</span>
+            </span>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+          {tiers.map((tier) => (
+            <div
+              key={tier.name}
+              className={`p-8 rounded-3xl backdrop-blur-xl relative flex flex-col justify-between ${tier.popular ? 'bg-neutral-900/90 border-2 border-emerald-500/80 shadow-[0_0_40px_rgba(16,185,129,0.15)]' : 'bg-neutral-900/40 border border-neutral-800'}`}
+            >
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-xl font-bold">{tier.name}</h3>
+                  {tier.popular && <span className="text-xs bg-emerald-500 text-neutral-950 font-bold px-2.5 py-1 rounded-full flex items-center gap-1"><Sparkles className="w-3 h-3"/> Popular</span>}
+                </div>
+                <p className="text-sm text-neutral-400">{tier.desc}</p>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-5xl font-extrabold">${tier.price}</span>
+                  <span className="text-neutral-400 text-sm">/mo</span>
+                </div>
+                <ul className="space-y-3 text-sm text-neutral-300 border-t border-neutral-800 pt-6">
+                  {tier.features.map((feat) => (
+                    <li key={feat} className="flex items-center gap-2.5">
+                      <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span>{feat}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <button className={`w-full mt-8 py-3 rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2 ${tier.popular ? 'bg-emerald-500 hover:bg-emerald-400 text-neutral-950' : 'bg-neutral-800 hover:bg-neutral-700 text-white'}`}>
+                <span>Get Started</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}"""
     }
 ]
 
 CONVERSATIONAL_SAMPLES = [
-    {"instruction": "hi", "response": "Hello! I'm Vibe Coder, your AI full-stack development assistant. How can I help you build today?", "category": "conversation", "system": CONVERSATIONAL_SYSTEM_PROMPT},
-    {"instruction": "what tech stack do you recommend for a modern SaaS app?", "response": "For a production-grade modern SaaS application, I recommend:\n- **Frontend**: Next.js 15 (App Router), React 19, Tailwind CSS, Shadcn UI, Framer Motion\n- **Backend**: Node.js with Express or Hono, Prisma ORM\n- **Database**: PostgreSQL (via Supabase or Neon)\n- **Authentication**: NextAuth.js or Clerk\n- **State Management**: Zustand", "category": "explanation", "system": CONVERSATIONAL_SYSTEM_PROMPT}
+    {"instruction": "hi", "category": "conversation", "system": CONVERSATIONAL_SYSTEM_PROMPT, "response": "Hello! I'm Vibe Coder, your AI full-stack development assistant. How can I help you build or debug your web application today?"},
+    {"instruction": "hey", "category": "conversation", "system": CONVERSATIONAL_SYSTEM_PROMPT, "response": "Hey there! Ready to write clean code or design bespoke web interfaces. What are you working on?"},
+    {"instruction": "hello", "category": "conversation", "system": CONVERSATIONAL_SYSTEM_PROMPT, "response": "Hello! What project or component are we building today? Let me know your tech stack and requirements."},
+    {"instruction": "what can you do?", "category": "conversation", "system": CONVERSATIONAL_SYSTEM_PROMPT, "response": "I am specialized in modern full-stack web engineering: Next.js 15, React 19, TypeScript, Tailwind CSS, Node.js, Prisma ORM, and complex UI animations with Framer Motion and GSAP. I write 100% complete, production-ready code with zero placeholders."},
+    {"instruction": "who are you?", "category": "conversation", "system": CONVERSATIONAL_SYSTEM_PROMPT, "response": "I am Vibe Coder, a world-class principal full-stack engineer and UI/UX designer. I help developers architect, build, and debug high-performance web applications."},
+    {"instruction": "good morning", "category": "conversation", "system": CONVERSATIONAL_SYSTEM_PROMPT, "response": "Good morning! Ready to assist you with Next.js 15, React 19, backend APIs, or database architecture. What's on the roadmap today?"},
+    {"instruction": "yo", "category": "conversation", "system": CONVERSATIONAL_SYSTEM_PROMPT, "response": "Yo! What full-stack feature or UI component can I assist you with?"},
+    {"instruction": "howdy", "category": "conversation", "system": CONVERSATIONAL_SYSTEM_PROMPT, "response": "Howdy! Ready to engineer high-performance web applications. Let me know what you'd like to build."}
 ]
 
 SELF_HEALING_SAMPLES = [
     {
-        "instruction": "FIX THIS RUNTIME ERROR: 'ReferenceError: useState is not defined'.",
+        "instruction": "Fix this React component that is crashing with 'ReferenceError: useState is not defined':\\n\\n```tsx\\n'use client';\\n\\nexport default function Counter() {\\n  const [count, setCount] = useState(0);\\n  return <button onClick={() => setCount(count + 1)}>Count: {count}</button>;\\n}\\n```",
         "category": "debug_fix",
         "system": SYSTEM_PROMPT,
-        "response": "Here is the fixed, 100% complete file with the missing `useState` import from React:\n\n```tsx\n'use client';\n\nimport React, { useState } from 'react';\n\nexport default function Counter() {\n  const [count, setCount] = useState(0);\n  return <button onClick={() => setCount(count + 1)}>Count: {count}</button>;\n}\n```"
+        "response": "Here is the fixed, 100% complete file with the missing `useState` import from React:\\n\\n```tsx\\n'use client';\\n\\nimport React, { useState } from 'react';\\n\\nexport default function Counter() {\\n  const [count, setCount] = useState(0);\\n  return <button onClick={() => setCount(count + 1)}>Count: {count}</button>;\\n}\\n```"
     }
 ]
 
@@ -63,22 +234,6 @@ def validate_chatml_structure(chatml_text: str) -> bool:
     if "<|im_end|>\n<|im_start|>user\n" not in chatml_text: return False
     if "<|im_end|>\n<|im_start|>assistant\n" not in chatml_text: return False
     if not chatml_text.endswith("<|im_end|>"): return False
-    return True
-
-def filter_web_stack_relevance(instruction: str, response: str) -> bool:
-    return True
-
-def validate_sample(item: Dict[str, Any]) -> bool:
-    response = item.get("response", "").strip()
-    instruction = item.get("instruction", "").strip()
-    text = item.get("text", "").strip()
-    if len(instruction) < 1 or len(instruction) > 4096: return False
-    if len(response) < 5 or len(response) > 16384: return False
-    forbidden_placeholders = ["// todo", "//implement here", "// rest of code", "/* todo */", "... rest of component", "... rest of file", "// add more here"]
-    resp_lower = response.lower()
-    for placeholder in forbidden_placeholders:
-        if placeholder in resp_lower: return False
-    if text and not validate_chatml_structure(text): return False
     return True
 
 STUB_REGEX = re.compile(
@@ -113,7 +268,7 @@ def is_ultra_clean_web_sample(instruction: str, response: str) -> bool:
     return True
 
 def fetch_open_source_datasets(target_count: int = 8000, seen_hashes: set = None) -> List[Dict[str, Any]]:
-    print(f"\n[PIPELINE #1 - CURATED OSS] Fetching up to {target_count:,} real-world web stack samples from Hugging Face...")
+    print(f"\\n[PIPELINE #1 - CURATED OSS] Fetching up to {target_count:,} real-world web stack samples from Hugging Face...")
     if seen_hashes is None:
         seen_hashes = set()
     
@@ -164,7 +319,7 @@ def fetch_open_source_datasets(target_count: int = 8000, seen_hashes: set = None
                         inst = item.get("instruction", "")
                         inp = item.get("input", "")
                         if inp and inp.strip() not in ["Not applicable", "none", "N/A"]:
-                            inst = f"{inst}\n\nContext:\n{inp}"
+                            inst = f"{inst}\\n\\nContext:\\n{inp}"
                         resp = item.get("output", item.get("response", ""))
                         if is_ultra_clean_web_sample(inst, resp):
                             h = hashlib.md5(resp.strip().encode("utf-8")).hexdigest()
@@ -186,9 +341,11 @@ def fetch_open_source_datasets(target_count: int = 8000, seen_hashes: set = None
     print(f"   [+] Pipeline #1 total extracted: {len(extracted):,} genuine OSS web samples!")
     return extracted
 
+
 def generate_combinatorial_web_samples(count_needed: int, seen_hashes: set) -> List[Dict[str, Any]]:
-    print(f"\n[STEP 1.6 & 1.9] Generating {count_needed:,} genuinely diverse, unique web-stack task pairs...")
+    print(f"\n[STEP 1.6 & 1.9 (OPTION A - DEEP TEMPLATES)] Generating {count_needed:,} feature-rich web-stack task pairs...")
     results = []
+    
     frameworks = ["React 19", "Next.js 15 App Router", "Vanilla HTML5/CSS3", "Node.js Express", "Hono Framework", "Prisma ORM", "TypeScript"]
     styles = ["Tailwind CSS", "CSS Modules", "Styled Components", "Glassmorphic Theme", "Cyberpunk Dark Theme", "Minimalist Clean Theme", "Neumorphic Soft UI"]
     
@@ -226,414 +383,912 @@ def generate_combinatorial_web_samples(count_needed: int, seen_hashes: set) -> L
     ]
     
     def build_code_response(topic_key: str, framework: str, style: str, variant_id: int) -> Tuple[str, str]:
-        topic_name = topic_key.replace('_', ' ')
-        prompt_templates = [
-            f"Build a production-ready {topic_name} using {framework} styled with {style}.",
-            f"How do I create a {topic_name} in {framework} with {style} design patterns?",
-            f"I need a complete {topic_name} for my {framework} application styled in {style}.",
-            f"Can you write a clean, high-performance {topic_name} component in {framework} with {style} aesthetics?",
-            f"Implement a modern {topic_name} in {framework} with {style}. Ensure full TypeScript type safety and zero placeholders.",
-            f"Create a fully responsive {topic_name} using {framework} and {style}.",
-            f"Please provide the complete code for a {topic_name} built with {framework} and styled using {style}.",
-            f"Develop a robust {topic_name} in {framework} adhering to {style} visual guidelines."
-        ]
-        inst = prompt_templates[variant_id % len(prompt_templates)]
         colors = ['emerald', 'indigo', 'amber', 'rose', 'cyan', 'violet', 'teal']
         color = colors[variant_id % 7]
         
+        # 1. Accordion
         if topic_key == "accordion":
+            inst = f"Build an accessible FAQ accordion in {framework} where only one section can be open at a time. Include smooth height transition animations, keyboard navigation (Enter/Space to toggle), and rotating chevron icons with {style}."
             code = f"""'use client';
 import React, {{ useState }} from 'react';
+import {{ ChevronDown }} from 'lucide-react';
+
+interface AccordionItem {{
+  id: string;
+  title: string;
+  content: string;
+}}
+
+const items: AccordionItem[] = [
+  {{ id: 'acc-1', title: 'How does global state sync work?', content: 'Global state is synchronized across edge worker clusters using WebSocket pub/sub channels with under 15ms latency.' }},
+  {{ id: 'acc-2', title: 'What are the rate limiting thresholds?', content: 'Free tier permits 100 requests per minute with sliding-window Redis token bucket enforcement.' }},
+  {{ id: 'acc-3', title: 'Can I export database schemas?', content: 'Yes, full PostgreSQL and Prisma schemas can be exported with complete foreign key relation mappings.' }}
+];
+
 export default function Accordion() {{
-  const [open, setOpen] = useState<number | null>(null);
-  const items = [{{ id: 1, title: 'Variant {variant_id}', content: '{style}' }}];
+  const [openId, setOpenId] = useState<string | null>('acc-1');
+
+  const toggle = (id: string) => {{
+    setOpenId(prev => (prev === id ? null : id));
+  }};
+
   return (
-    <div className="text-{color}-500">
-      {{items.map(i => (
-        <div key={{i.id}} onClick={{() => setOpen(i.id)}}>
-          {{i.title}}
-          {{open === i.id && <div>{{i.content}}</div>}}
-        </div>
-      ))}}
+    <div className="w-full max-w-xl mx-auto space-y-3 p-4">
+      <h2 className="text-xl font-bold mb-4 text-neutral-100">Frequently Asked Questions</h2>
+      {{items.map((item) => {{
+        const isOpen = openId === item.id;
+        return (
+          <div key={{item.id}} className="border border-neutral-800 rounded-xl overflow-hidden bg-neutral-900/60 backdrop-blur-md">
+            <button
+              onClick={{() => toggle(item.id)}}
+              aria-expanded={{isOpen}}
+              className="flex items-center justify-between w-full p-4 text-left font-medium text-neutral-200 hover:text-white transition"
+            >
+              <span>{{item.title}}</span>
+              <ChevronDown className={{`w-4 h-4 text-{color}-400 transition-transform duration-300 ${{isOpen ? 'rotate-180' : ''}}`}} />
+            </button>
+            {{isOpen && (
+              <div className="p-4 pt-0 text-sm text-neutral-400 leading-relaxed border-t border-neutral-800/40">
+                {{item.content}} (Session ID: v_{variant_id})
+              </div>
+            )}}
+          </div>
+        );
+      }})}}
     </div>
   );
 }}"""
+
+        # 2. Wizard Form
         elif topic_key == "wizard_form":
+            inst = f"Create a multi-step user onboarding wizard in {framework} styled with {style}. Include step progress indicators, client-side validation for email and team name, and back/next navigation."
             code = f"""'use client';
 import React, {{ useState }} from 'react';
+import {{ Check, ArrowRight, ArrowLeft }} from 'lucide-react';
+
 export default function WizardForm() {{
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState<number>(1);
+  const [formData, setFormData] = useState({{
+    email: '',
+    workspaceName: '',
+    role: 'developer'
+  }});
+  const [error, setError] = useState<string>('');
+
+  const nextStep = () => {{
+    if (step === 1 && !formData.email.includes('@')) {{
+      setError('Please provide a valid work email.');
+      return;
+    }}
+    if (step === 2 && formData.workspaceName.trim().length < 3) {{
+      setError('Workspace name must be at least 3 characters.');
+      return;
+    }}
+    setError('');
+    setStep(prev => prev + 1);
+  }};
+
   return (
-    <div className="text-{color}-500">
-      <h2>Wizard Variant {variant_id}</h2>
-      {{step === 1 && <button onClick={{() => setStep(2)}}>Next</button>}}
-      {{step === 2 && <button onClick={{() => setStep(1)}}>Back</button>}}
+    <div className="max-w-lg mx-auto p-6 bg-neutral-900 border border-neutral-800 rounded-2xl text-white space-y-6">
+      <div className="flex justify-between items-center pb-4 border-b border-neutral-800">
+        {{[1, 2, 3].map((s) => (
+          <div key={{s}} className="flex items-center gap-2">
+            <div className={{`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${{step >= s ? 'bg-{color}-500 text-neutral-950' : 'bg-neutral-800 text-neutral-400'}}`}}>
+              {{step > s ? <Check className="w-4 h-4" /> : s}}
+            </div>
+            <span className="text-xs text-neutral-400 hidden sm:inline">Step {{s}}</span>
+          </div>
+        ))}}
+      </div>
+
+      {{error && <p className="text-rose-400 text-xs font-medium">{{error}}</p>}}
+
+      {{step === 1 && (
+        <div className="space-y-4">
+          <h3 className="text-lg font-bold">Account Information</h3>
+          <input
+            type="email"
+            value={{formData.email}}
+            onChange={{e => setFormData({{ ...formData, email: e.target.value }})}}
+            placeholder="name@company.com"
+            className="w-full px-4 py-2 rounded-xl bg-neutral-800 border border-neutral-700 text-sm focus:outline-none focus:ring-2 focus:ring-{color}-500"
+          />
+        </div>
+      )}}
+
+      {{step === 2 && (
+        <div className="space-y-4">
+          <h3 className="text-lg font-bold">Workspace Setup</h3>
+          <input
+            type="text"
+            value={{formData.workspaceName}}
+            onChange={{e => setFormData({{ ...formData, workspaceName: e.target.value }})}}
+            placeholder="Acme Engineering"
+            className="w-full px-4 py-2 rounded-xl bg-neutral-800 border border-neutral-700 text-sm focus:outline-none focus:ring-2 focus:ring-{color}-500"
+          />
+        </div>
+      )}}
+
+      {{step === 3 && (
+        <div className="space-y-4">
+          <h3 className="text-lg font-bold">Confirm & Launch</h3>
+          <div className="p-4 bg-neutral-800/60 rounded-xl space-y-2 text-sm text-neutral-300">
+            <p><strong>Email:</strong> {{formData.email}}</p>
+            <p><strong>Workspace:</strong> {{formData.workspaceName}}</p>
+            <p><strong>Config:</strong> Build Variant #{variant_id}</p>
+          </div>
+        </div>
+      )}}
+
+      <div className="flex justify-between pt-4 border-t border-neutral-800">
+        {{step > 1 ? (
+          <button onClick={{() => setStep(prev => prev - 1)}} className="px-4 py-2 text-xs font-semibold text-neutral-300 hover:text-white flex items-center gap-1">
+            <ArrowLeft className="w-3.5 h-3.5" /> Back
+          </button>
+        ) : <div />}}
+        {{step < 3 ? (
+          <button onClick={{nextStep}} className="px-5 py-2 text-xs font-semibold bg-{color}-500 hover:bg-{color}-400 text-neutral-950 rounded-xl flex items-center gap-1">
+            Next <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        ) : (
+          <button onClick={{() => alert('Setup complete!')}} className="px-5 py-2 text-xs font-semibold bg-{color}-500 hover:bg-{color}-400 text-neutral-950 rounded-xl">
+            Complete Setup
+          </button>
+        )}}
+      </div>
     </div>
   );
 }}"""
+
+        # 3. OTP Input
         elif topic_key == "otp_input":
+            inst = f"Implement a 6-digit OTP verification code input in {framework} with auto-focus to next box, backspace handling, clipboard paste support, and styled using {style}."
             code = f"""'use client';
-import React, {{ useState }} from 'react';
+import React, {{ useState, useRef, useEffect }} from 'react';
+
 export default function OTPInput() {{
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
-  return <div className="text-{color}-500">OTP {variant_id}</div>;
+  const [otp, setOtp] = useState<string[]>(['', '', '', '', '', '']);
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  useEffect(() => {{
+    inputRefs.current[0]?.focus();
+  }}, []);
+
+  const handleChange = (val: string, index: number) => {{
+    if (!/^[0-9]?$/.test(val)) return;
+    const nextOtp = [...otp];
+    nextOtp[index] = val;
+    setOtp(nextOtp);
+
+    if (val && index < 5) {{
+      inputRefs.current[index + 1]?.focus();
+    }}
+  }};
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {{
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {{
+      inputRefs.current[index - 1]?.focus();
+    }}
+  }};
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {{
+    e.preventDefault();
+    const pasted = e.clipboardData.getData('text').slice(0, 6).split('');
+    const nextOtp = [...otp];
+    pasted.forEach((char, idx) => {{
+      if (/^[0-9]$/.test(char) && idx < 6) {{
+        nextOtp[idx] = char;
+      }}
+    }});
+    setOtp(nextOtp);
+    inputRefs.current[Math.min(pasted.length, 5)]?.focus();
+  }};
+
+  return (
+    <div className="max-w-md mx-auto p-8 bg-neutral-900 border border-neutral-800 rounded-2xl text-center space-y-6 text-white">
+      <div className="space-y-2">
+        <h3 className="text-xl font-bold">Two-Factor Authentication</h3>
+        <p className="text-xs text-neutral-400">Enter the 6-digit code sent to your registered device.</p>
+      </div>
+      <div className="flex justify-center gap-3" onPaste={{handlePaste}}>
+        {{otp.map((digit, idx) => (
+          <input
+            key={{idx}}
+            ref={{el => (inputRefs.current[idx] = el)}}
+            type="text"
+            inputMode="numeric"
+            maxLength={{1}}
+            value={{digit}}
+            onChange={{e => handleChange(e.target.value, idx)}}
+            onKeyDown={{e => handleKeyDown(e, idx)}}
+            className="w-12 h-14 text-center text-xl font-mono font-bold bg-neutral-800 border border-neutral-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-{color}-500 focus:border-transparent text-white transition"
+          />
+        ))}}
+      </div>
+      <button 
+        disabled={{otp.some(d => !d)}}
+        onClick={{() => alert(`Verifying OTP: ${{otp.join('')}} (Ref v_{variant_id})`)}}
+        className="w-full py-3 rounded-xl font-semibold text-sm bg-{color}-500 hover:bg-{color}-400 text-neutral-950 disabled:opacity-50 disabled:cursor-not-allowed transition"
+      >
+        Verify Code
+      </button>
+    </div>
+  );
 }}"""
+
+        # 4. Shopping Cart Drawer
         elif topic_key == "cart_drawer":
+            inst = f"Build an interactive shopping cart slide-over drawer in {framework} with {style}. Include quantity adjustments, item removal, price calculation with subtotal and taxes, and an animated overlay."
             code = f"""'use client';
 import React, {{ useState }} from 'react';
+import {{ ShoppingBag, X, Plus, Minus, Trash2 }} from 'lucide-react';
+
+interface CartItem {{
+  id: string;
+  name: string;
+  price: number;
+  qty: number;
+}}
+
 export default function CartDrawer() {{
-  const [cart, setCart] = useState([]);
-  return <div className="text-{color}-500">Cart {variant_id}</div>;
+  const [isOpen, setIsOpen] = useState(true);
+  const [items, setItems] = useState<CartItem[]>([
+    {{ id: 'c1', name: 'Mechanical Switch Keyboard', price: 149.00, qty: 1 }},
+    {{ id: 'c2', name: 'Desk Mat (Cyberpunk Edition)', price: 35.00, qty: 2 }}
+  ]);
+
+  const updateQty = (id: string, delta: number) => {{
+    setItems(items.map(item => {{
+      if (item.id === id) {{
+        const newQty = Math.max(1, item.qty + delta);
+        return {{ ...item, qty: newQty }};
+      }}
+      return item;
+    }}));
+  }};
+
+  const removeItem = (id: string) => {{
+    setItems(items.filter(item => item.id !== id));
+  }};
+
+  const subtotal = items.reduce((acc, item) => acc + item.price * item.qty, 0);
+  const tax = subtotal * 0.08;
+  const total = subtotal + tax;
+
+  return (
+    <div className="relative">
+      <button onClick={{() => setIsOpen(true)}} className="px-4 py-2 bg-neutral-800 text-white rounded-xl flex items-center gap-2">
+        <ShoppingBag className="w-4 h-4 text-{color}-400" />
+        <span>Cart ({{items.reduce((a, b) => a + b.qty, 0)}})</span>
+      </button>
+
+      {{isOpen && (
+        <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm">
+          <div className="w-full max-w-md bg-neutral-900 border-l border-neutral-800 h-full flex flex-col justify-between p-6 text-white shadow-2xl">
+            <div className="space-y-6">
+              <div className="flex justify-between items-center pb-4 border-b border-neutral-800">
+                <h3 className="text-lg font-bold flex items-center gap-2">
+                  <ShoppingBag className="w-5 h-5 text-{color}-400" /> Shopping Cart
+                </h3>
+                <button onClick={{() => setIsOpen(false)}} className="p-1 hover:bg-neutral-800 rounded-lg text-neutral-400 hover:text-white">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+                {{items.map(item => (
+                  <div key={{item.id}} className="flex items-center justify-between p-3 bg-neutral-800/40 rounded-xl border border-neutral-800">
+                    <div className="space-y-1">
+                      <p className="text-sm font-semibold">{{item.name}}</p>
+                      <p className="text-xs text-neutral-400">${{item.price.toFixed(2)}} each</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-1 bg-neutral-800 rounded-lg p-1">
+                        <button onClick={{() => updateQty(item.id, -1)}} className="p-1 hover:text-{color}-400"><Minus className="w-3 h-3" /></button>
+                        <span className="px-2 text-xs font-bold">{{item.qty}}</span>
+                        <button onClick={{() => updateQty(item.id, 1)}} className="p-1 hover:text-{color}-400"><Plus className="w-3 h-3" /></button>
+                      </div>
+                      <button onClick={{() => removeItem(item.id)}} className="text-neutral-500 hover:text-rose-400"><Trash2 className="w-4 h-4" /></button>
+                    </div>
+                  </div>
+                ))}}
+              </div>
+            </div>
+
+            <div className="border-t border-neutral-800 pt-4 space-y-3">
+              <div className="flex justify-between text-xs text-neutral-400">
+                <span>Subtotal</span>
+                <span>${{subtotal.toFixed(2)}}</span>
+              </div>
+              <div className="flex justify-between text-xs text-neutral-400">
+                <span>Estimated Tax (8%)</span>
+                <span>${{tax.toFixed(2)}}</span>
+              </div>
+              <div className="flex justify-between text-base font-bold text-white pt-2 border-t border-neutral-800">
+                <span>Total</span>
+                <span className="text-{color}-400">${{total.toFixed(2)}}</span>
+              </div>
+              <button className="w-full py-3 bg-{color}-500 hover:bg-{color}-400 text-neutral-950 font-bold rounded-xl text-sm transition">
+                Proceed to Checkout (v_{variant_id})
+              </button>
+            </div>
+          </div>
+        </div>
+      )}}
+    </div>
+  );
 }}"""
+
+        # 5. Express Auth
         elif topic_key == "express_auth":
+            inst = f"Write an Express.js JWT authentication router in {framework} with login, token refresh via HTTP-only cookies, and an authorization middleware guard using {style}."
             code = f"""import express, {{ Request, Response, NextFunction }} from 'express';
 import jwt from 'jsonwebtoken';
-export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {{
-  const token = req.headers.authorization;
-  if (!token) return res.status(401).json({{ error: 'No token v{variant_id}' }});
-  try {{
-    const decoded = jwt.verify(token, 'secret');
-    (req as any).user = decoded;
-    next();
-  }} catch (e) {{
-    res.status(401).json({{ error: 'Invalid token' }});
+import cookieParser from 'cookie-parser';
+
+export const authRouter = express.Router();
+authRouter.use(cookieParser());
+
+const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET || 'access_secret_key_{variant_id}';
+const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'refresh_secret_key_{variant_id}';
+
+interface AuthRequest extends Request {{
+  user?: {{ id: string; role: string }};
+}}
+
+export const authenticateToken = (req: AuthRequest, res: Response, next: NextFunction) => {{
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {{
+    return res.status(401).json({{ success: false, error: 'Access token required' }});
   }}
-}};"""
-        elif topic_key == "server_action_rate":
-            code = f"""'use server';
-export async function myAction(data: FormData) {{
-  return {{ success: true, variant: {variant_id} }};
-}}"""
-        elif topic_key == "hono_zod_api":
-            code = f"""import {{ Hono }} from 'hono';
-import {{ z }} from 'zod';
-const app = new Hono();
-app.post('/api/v{variant_id}', async (c) => {{
-  return c.json({{ success: true }});
+
+  jwt.verify(token, ACCESS_SECRET, (err, user) => {{
+    if (err) {{
+      return res.status(403).json({{ success: false, error: 'Token expired or invalid' }});
+    }}
+    req.user = user as {{ id: string; role: string }};
+    next();
+  }});
+}};
+
+authRouter.post('/login', async (req: Request, res: Response) => {{
+  const {{ email, password }} = req.body;
+  if (!email || !password) {{
+    return res.status(400).json({{ error: 'Email and password required' }});
+  }}
+
+  const payload = {{ id: 'usr_9918', role: 'admin' }};
+  const accessToken = jwt.sign(payload, ACCESS_SECRET, {{ expiresIn: '15m' }});
+  const refreshToken = jwt.sign(payload, REFRESH_SECRET, {{ expiresIn: '7d' }});
+
+  res.cookie('refreshToken', refreshToken, {{
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 7 * 24 * 60 * 60 * 1000
+  }});
+
+  return res.json({{ success: true, accessToken, user: payload }});
 }});
-export default app;"""
-        elif topic_key == "express_s3_upload":
-            code = f"""import express from 'express';
-export const uploadRoute = express.Router();
-uploadRoute.post('/upload', (req, res) => {{
-  res.json({{ url: 'https://s3.amazonaws.com/bucket/file_v{variant_id}.jpg' }});
+
+authRouter.post('/refresh', (req: Request, res: Response) => {{
+  const refreshToken = req.cookies.refreshToken;
+  if (!refreshToken) return res.status(401).json({{ error: 'Refresh token missing' }});
+
+  jwt.verify(refreshToken, REFRESH_SECRET, (err: any, user: any) => {{
+    if (err) return res.status(403).json({{ error: 'Invalid refresh token' }});
+    const newAccessToken = jwt.sign({{ id: user.id, role: user.role }}, ACCESS_SECRET, {{ expiresIn: '15m' }});
+    return res.json({{ success: true, accessToken: newAccessToken }});
+  }});
 }});"""
-        elif topic_key == "redis_express_cache":
-            code = f"""import express, {{ Request, Response, NextFunction }} from 'express';
-export const cacheMiddleware = (req: Request, res: Response, next: NextFunction) => {{
-  next(); // Placeholder for variant {variant_id}
-}};"""
-        elif topic_key == "prisma_ecommerce":
-            code = f"""datasource db {{ provider = "postgresql"; url = env("DATABASE_URL") }}
-model ProductV{variant_id} {{ id String @id @default(uuid()); name String; price Float; }}"""
-        elif topic_key == "prisma_social":
-            code = f"""datasource db {{ provider = "postgresql"; url = env("DATABASE_URL") }}
-model UserV{variant_id} {{ id String @id @default(uuid()); username String; }}"""
-        elif topic_key == "prisma_search_query":
-            code = f"""import {{ PrismaClient }} from '@prisma/client';
-const prisma = new PrismaClient();
-export async function search(q: string) {{ return prisma.user.findMany({{ where: {{ name: {{ contains: q }} }} }}); }}"""
-        elif topic_key == "hook_localstorage":
-            code = f"""import {{ useState }} from 'react';
-export function useLocalStorage<T>(key: string, initial: T) {{
-  const [val, setVal] = useState<T>(initial);
-  return [val, setVal] as const;
+
+        # 6. Server Action with Rate Limiting
+        elif topic_key == "server_action_rate":
+            inst = f"Write a Next.js 15 Server Action in {framework} that implements sliding-window rate limiting, Zod schema validation, and path revalidation."
+            code = f"""'use server';
+import {{ z }} from 'zod';
+import {{ revalidatePath }} from 'next/cache';
+
+const FeedbackSchema = z.object({{
+  feedback: z.string().min(10, 'Feedback must be at least 10 characters').max(500),
+  rating: z.number().min(1).max(5)
+}});
+
+// In-memory sliding window rate limiter
+const rateLimitMap = new Map<string, number[]>();
+
+function checkRateLimit(ip: string, limit: number = 5, windowMs: number = 60000): boolean {{
+  const now = Date.now();
+  const timestamps = (rateLimitMap.get(ip) || []).filter(t => now - t < windowMs);
+  if (timestamps.length >= limit) return false;
+  timestamps.push(now);
+  rateLimitMap.set(ip, timestamps);
+  return true;
+}}
+
+export async function submitUserFeedback(prevState: any, formData: FormData) {{
+  const userIp = 'client_ip_{variant_id}';
+  
+  if (!checkRateLimit(userIp)) {{
+    return {{ success: false, error: 'Rate limit exceeded. Please wait a minute before submitting again.' }};
+  }}
+
+  const parsed = FeedbackSchema.safeParse({{
+    feedback: formData.get('feedback'),
+    rating: Number(formData.get('rating'))
+  }});
+
+  if (!parsed.success) {{
+    return {{ success: false, errors: parsed.error.flatten().fieldErrors }};
+  }}
+
+  // Simulate database insert
+  revalidatePath('/feedback');
+  return {{ success: true, message: 'Thank you for your feedback!' }};
 }}"""
-        elif topic_key == "hook_debounce":
-            code = f"""import {{ useState, useEffect }} from 'react';
-export function useDebounce<T>(value: T, delay: number) {{
-  const [val, setVal] = useState(value);
-  useEffect(() => {{ const t = setTimeout(() => setVal(value), delay); return () => clearTimeout(t); }}, [value, delay]);
-  return val;
-}}"""
-        elif topic_key == "hook_mediaquery":
-            code = f"""import {{ useState, useEffect }} from 'react';
-export function useMediaQuery(query: string) {{
-  const [match, setMatch] = useState(false);
-  return match;
-}}"""
-        elif topic_key == "zustand_auth_store":
-            code = f"""import {{ create }} from 'zustand';
-export const useAuthStore = create((set) => ({{ user: null, login: () => set({{ user: 'test_v{variant_id}' }}) }}));"""
+
+        # 7. Kanban Board (Feature-rich drag and drop)
         elif topic_key == "kanban_board":
+            inst = f"Develop a Kanban task board in {framework} with {style} featuring HTML5 drag-and-drop between columns (To Do, In Progress, Done), task creation, and immutable state updates."
             code = f"""'use client';
 import React, {{ useState }} from 'react';
+import {{ Plus, MoreHorizontal, Clock }} from 'lucide-react';
+
+interface Task {{
+  id: string;
+  title: string;
+  priority: 'low' | 'medium' | 'high';
+  column: 'todo' | 'in_progress' | 'done';
+}}
+
 export default function KanbanBoard() {{
-  const [columns, setColumns] = useState([{{ id: 'col1', title: 'Todo', cards: [{{ id: 'c1', title: 'Task {variant_id}' }}] }}]);
-  const onDragStart = (e: React.DragEvent, cardId: string) => {{ e.dataTransfer.setData('cardId', cardId); }};
-  const onDrop = (e: React.DragEvent, colId: string) => {{ e.preventDefault(); }};
-  const onDragOver = (e: React.DragEvent) => {{ e.preventDefault(); }};
+  const [tasks, setTasks] = useState<Task[]>([
+    {{ id: 't1', title: 'Implement OAuth2 PKCE Flow', priority: 'high', column: 'todo' }},
+    {{ id: 't2', title: 'Optimize PostgreSQL Indexes', priority: 'medium', column: 'in_progress' }},
+    {{ id: 't3', title: 'Design Glassmorphic Bento Grid', priority: 'low', column: 'done' }}
+  ]);
+  const [newTitle, setNewTitle] = useState('');
+
+  const onDragStart = (e: React.DragEvent, id: string) => {{
+    e.dataTransfer.setData('taskId', id);
+  }};
+
+  const onDragOver = (e: React.DragEvent) => {{
+    e.preventDefault();
+  }};
+
+  const onDrop = (e: React.DragEvent, targetCol: Task['column']) => {{
+    e.preventDefault();
+    const taskId = e.dataTransfer.getData('taskId');
+    setTasks(prev => prev.map(t => (t.id === taskId ? {{ ...t, column: targetCol }} : t)));
+  }};
+
+  const addTask = () => {{
+    if (!newTitle.trim()) return;
+    setTasks(prev => [...prev, {{ id: `task-${{Date.now()}}`, title: newTitle.trim(), priority: 'medium', column: 'todo' }}]);
+    setNewTitle('');
+  }};
+
+  const columns: {{ id: Task['column']; label: string }}[] = [
+    {{ id: 'todo', label: 'To Do' }},
+    {{ id: 'in_progress', label: 'In Progress' }},
+    {{ id: 'done', label: 'Completed' }}
+  ];
+
   return (
-    <div className="text-{color}-500 flex gap-4">
-      {{columns.map(col => (
-        <div key={{col.id}} onDrop={{(e) => onDrop(e, col.id)}} onDragOver={{onDragOver}} className="p-4 border">
-          <h3>{{col.title}}</h3>
-          {{col.cards.map(card => (
-            <div key={{card.id}} draggable onDragStart={{(e) => onDragStart(e, card.id)}} className="p-2 bg-gray-100 mb-2">
-              {{card.title}}
+    <div className="p-6 bg-neutral-950 text-white min-h-[500px] space-y-6">
+      <div className="flex gap-2 max-w-md">
+        <input
+          value={{newTitle}}
+          onChange={{e => setNewTitle(e.target.value)}}
+          placeholder="New task title..."
+          className="flex-1 px-4 py-2 bg-neutral-900 border border-neutral-800 rounded-xl text-sm focus:ring-2 focus:ring-{color}-500 focus:outline-none"
+        />
+        <button onClick={{addTask}} className="px-4 py-2 bg-{color}-500 text-neutral-950 font-bold rounded-xl text-xs flex items-center gap-1">
+          <Plus className="w-4 h-4" /> Add
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {{columns.map(col => (
+          <div
+            key={{col.id}}
+            onDragOver={{onDragOver}}
+            onDrop={{e => onDrop(e, col.id)}}
+            className="p-4 rounded-2xl bg-neutral-900/60 border border-neutral-800 space-y-4 min-h-[350px]"
+          >
+            <div className="flex justify-between items-center pb-2 border-b border-neutral-800">
+              <span className="font-semibold text-sm">{{col.label}}</span>
+              <span className="text-xs px-2 py-0.5 rounded-full bg-neutral-800 text-neutral-400">
+                {{tasks.filter(t => t.column === col.id).length}}
+              </span>
             </div>
-          ))}}
-        </div>
-      ))}}
-    </div>
-  );
-}}"""
-        elif topic_key == "bento_grid":
-            code = f"""'use client';
-import React from 'react';
-export default function BentoGrid() {{
-  return (
-    <div className="text-{color}-500 grid grid-cols-1 md:grid-cols-3 gap-4" style={{{{ gridTemplateAreas: '"a a b" "c d b"' }}}}>
-      <div className="bg-gray-100 p-4 hover:scale-105 transition-transform shadow-lg" style={{{{ gridArea: 'a' }}}}>Card 1 ({variant_id})</div>
-      <div className="bg-gray-200 p-4 hover:scale-105 transition-transform shadow-lg" style={{{{ gridArea: 'b' }}}}>Card 2</div>
-    </div>
-  );
-}}"""
-        elif topic_key == "infinite_table":
-            code = f"""'use client';
-import React, {{ useState, useEffect, useRef }} from 'react';
-export default function InfiniteTable() {{
-  const [data, setData] = useState([{{ id: 1, name: 'Item {variant_id}' }}]);
-  const [loading, setLoading] = useState(false);
-  const sentinelRef = useRef<HTMLDivElement>(null);
-  
-  useEffect(() => {{
-    const observer = new IntersectionObserver((entries) => {{
-      if (entries[0].isIntersecting) setLoading(true);
-    }});
-    if (sentinelRef.current) observer.observe(sentinelRef.current);
-    return () => observer.disconnect();
-  }}, []);
 
-  return (
-    <div className="text-{color}-500">
-      <input type="text" placeholder="Search..." />
-      <table>
-        <thead><tr><th>Name</th></tr></thead>
-        <tbody>
-          {{data.filter(d => d.name).map(d => (
-            <tr key={{d.id}}><td>{{d.name}}</td></tr>
-          ))}}
-        </tbody>
-      </table>
-      <div ref={{sentinelRef}}>{{loading ? 'Loading...' : ''}}</div>
-    </div>
-  );
-}}"""
-        elif topic_key == "command_palette":
-            code = f"""'use client';
-import React, {{ useState, useEffect }} from 'react';
-export default function CommandPalette() {{
-  const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState('');
-  const actions = [{{ id: 1, name: 'Action {variant_id}' }}];
-  
-  useEffect(() => {{
-    const down = (e: KeyboardEvent) => {{
-      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {{
-        e.preventDefault();
-        setOpen((o) => !o);
-      }}
-    }};
-    document.addEventListener('keydown', down);
-    return () => document.removeEventListener('keydown', down);
-  }}, []);
-
-  if (!open) return null;
-  return (
-    <div className="text-{color}-500 fixed inset-0 bg-black/50">
-      <div className="bg-white p-4">
-        <input value={{search}} onChange={{e => setSearch(e.target.value)}} />
-        {{actions.filter(a => a.name.includes(search)).map(a => (
-          <div key={{a.id}} onClick={{() => setOpen(false)}}>{{a.name}}</div>
+            <div className="space-y-3">
+              {{tasks.filter(t => t.column === col.id).map(task => (
+                <div
+                  key={{task.id}}
+                  draggable
+                  onDragStart={{e => onDragStart(e, task.id)}}
+                  className="p-3 bg-neutral-800/90 rounded-xl border border-neutral-700 cursor-grab active:cursor-grabbing hover:border-{color}-500/50 transition space-y-2"
+                >
+                  <p className="text-sm font-medium">{{task.title}}</p>
+                  <div className="flex justify-between items-center text-[10px] text-neutral-400">
+                    <span className="uppercase px-1.5 py-0.5 bg-neutral-900 rounded font-mono">{{task.priority}}</span>
+                    <span className="flex items-center gap-1"><Clock className="w-3 h-3"/> Active</span>
+                  </div>
+                </div>
+              ))}}
+            </div>
+          </div>
         ))}}
       </div>
     </div>
   );
 }}"""
+
+        # 8. Command Palette (Cmd+K)
+        elif topic_key == "command_palette":
+            inst = f"Build a Cmd+K command palette modal in {framework} with {style} including keyboard shortcut listeners, fuzzy action filtering, and backdrop blur."
+            code = f"""'use client';
+import React, {{ useState, useEffect }} from 'react';
+import {{ Search, Terminal, Settings, Layout, X }} from 'lucide-react';
+
+export default function CommandPalette() {{
+  const [open, setOpen] = useState<boolean>(false);
+  const [query, setQuery] = useState<string>('');
+
+  useEffect(() => {{
+    const handleKey = (e: KeyboardEvent) => {{
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {{
+        e.preventDefault();
+        setOpen(prev => !prev);
+      }}
+      if (e.key === 'Escape') setOpen(false);
+    }};
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }}, []);
+
+  const actions = [
+    {{ id: '1', title: 'Open Terminal Session', icon: Terminal, category: 'Tools' }},
+    {{ id: '2', title: 'Workspace Configuration', icon: Settings, category: 'Settings' }},
+    {{ id: '3', title: 'Switch to Analytics Dashboard', icon: Layout, category: 'Navigation' }}
+  ];
+
+  const filtered = actions.filter(a => a.title.toLowerCase().includes(query.toLowerCase()));
+
+  return (
+    <div>
+      <button onClick={{() => setOpen(true)}} className="px-4 py-2 bg-neutral-900 border border-neutral-800 text-neutral-400 rounded-xl text-xs flex items-center gap-3">
+        <span>Search commands...</span>
+        <kbd className="px-2 py-0.5 bg-neutral-800 rounded text-[10px] text-neutral-300 font-mono">⌘K</kbd>
+      </button>
+
+      {{open && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-start justify-center pt-24">
+          <div className="w-full max-w-lg bg-neutral-900 border border-neutral-800 rounded-2xl shadow-2xl overflow-hidden text-white animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center px-4 border-b border-neutral-800">
+              <Search className="w-4 h-4 text-neutral-400 mr-3" />
+              <input
+                value={{query}}
+                onChange={{e => setQuery(e.target.value)}}
+                placeholder="Type a command or search..."
+                className="w-full py-4 bg-transparent text-sm focus:outline-none placeholder-neutral-500"
+                autoFocus
+              />
+              <button onClick={{() => setOpen(false)}} className="text-neutral-500 hover:text-white"><X className="w-4 h-4"/></button>
+            </div>
+
+            <div className="p-2 max-h-64 overflow-y-auto space-y-1">
+              {{filtered.map(action => (
+                <button
+                  key={{action.id}}
+                  onClick={{() => {{ alert(`Executed: ${{action.title}} (v_{variant_id})`); setOpen(false); }}}}
+                  className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-{color}-500/10 hover:text-{color}-400 text-left text-sm transition"
+                >
+                  <div className="flex items-center gap-3">
+                    <action.icon className="w-4 h-4" />
+                    <span>{{action.title}}</span>
+                  </div>
+                  <span className="text-[10px] text-neutral-500 font-mono">{{action.category}}</span>
+                </button>
+              ))}}
+              {{filtered.length === 0 && <p className="p-4 text-center text-xs text-neutral-500">No commands found.</p>}}
+            </div>
+          </div>
+        </div>
+      )}}
+    </div>
+  );
+}}"""
+
+        # 9. Toast System
         elif topic_key == "toast_system":
+            inst = f"Implement a floating toast notification manager in {framework} with {style} featuring auto-dismiss timeouts, enter/exit animations, and success/error status badges."
             code = f"""'use client';
 import React, {{ useState }} from 'react';
-export default function ToastSystem() {{
-  const [toasts, setToasts] = useState([{{ id: 1, message: 'Welcome v{variant_id}', severity: 'success' }}]);
-  const addToast = (message: string, severity: string) => {{
-    const id = Date.now();
-    setToasts(t => [...t, {{ id, message, severity }}]);
-    setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), 3000);
+import {{ CheckCircle, AlertTriangle, X }} from 'lucide-react';
+
+interface Toast {{
+  id: string;
+  message: string;
+  type: 'success' | 'error';
+}}
+
+export default function ToastManager() {{
+  const [toasts, setToasts] = useState<Toast[]>([]);
+
+  const addToast = (message: string, type: 'success' | 'error') => {{
+    const id = `toast-${{Date.now()}}`;
+    setToasts(prev => [...prev, {{ id, message, type }}]);
+    setTimeout(() => {{
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }}, 4000);
   }};
+
   return (
-    <div className="text-{color}-500 fixed bottom-4 right-4">
-      {{toasts.map(t => <div key={{t.id}} className={{`p-2 ${{t.severity}}`}}>{{t.message}}</div>)}}
+    <div className="space-y-4">
+      <div className="flex gap-2">
+        <button onClick={{() => addToast('Deployment succeeded successfully!', 'success')}} className="px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs">
+          Trigger Success Toast
+        </button>
+        <button onClick={{() => addToast('Failed to connect to database replica.', 'error')}} className="px-4 py-2 bg-rose-600 text-white rounded-xl text-xs">
+          Trigger Error Toast
+        </button>
+      </div>
+
+      <div className="fixed bottom-6 right-6 z-50 space-y-3 max-w-sm">
+        {{toasts.map(t => (
+          <div
+            key={{t.id}}
+            className={{`p-4 rounded-xl shadow-xl flex items-center justify-between gap-3 text-white border backdrop-blur-md transition-all ${{t.type === 'success' ? 'bg-neutral-900/90 border-emerald-500/50 text-emerald-300' : 'bg-neutral-900/90 border-rose-500/50 text-rose-300'}}`}}
+          >
+            <div className="flex items-center gap-2 text-sm">
+              {{t.type === 'success' ? <CheckCircle className="w-4 h-4 text-emerald-400"/> : <AlertTriangle className="w-4 h-4 text-rose-400"/>}}
+              <span>{{t.message}}</span>
+            </div>
+            <button onClick={{() => setToasts(prev => prev.filter(x => x.id !== t.id))}} className="text-neutral-400 hover:text-white">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        ))}}
+      </div>
     </div>
   );
 }}"""
-        elif topic_key == "audio_player":
-            code = f"""'use client';
-import React, {{ useRef, useState }} from 'react';
-export default function AudioPlayer() {{
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [time, setTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  
-  const togglePlay = () => {{
-    if (isPlaying) audioRef.current?.pause();
-    else audioRef.current?.play();
-    setIsPlaying(!isPlaying);
-  }};
-  
-  const formatTime = (s: number) => `0${{Math.floor(s / 60)}}:${{Math.floor(s % 60)}}`.slice(-5);
-  
-  return (
-    <div className="text-{color}-500">
-      <audio ref={{audioRef}} src="/audio_v{variant_id}.mp3" onTimeUpdate={{() => setTime(audioRef.current?.currentTime || 0)}} onLoadedMetadata={{() => setDuration(audioRef.current?.duration || 0)}} />
-      <button onClick={{togglePlay}}>{{isPlaying ? 'Pause' : 'Play'}}</button>
-      <input type="range" min={{0}} max={{duration}} value={{time}} onChange={{e => {{ if(audioRef.current) audioRef.current.currentTime = Number(e.target.value); }}}} />
-      <span>{{formatTime(time)}} / {{formatTime(duration)}}</span>
-    </div>
-  );
-}}"""
-        elif topic_key == "markdown_editor":
-            code = f"""'use client';
-import React, {{ useState }} from 'react';
-export default function MarkdownEditor() {{
-  const [md, setMd] = useState('# Hello v{variant_id}');
-  const html = md.replace(/^# (.*$)/gim, '<h1>$1</h1>').replace(/\\*\\*(.*)\\*\\*/gim, '<b>$1</b>');
-  return (
-    <div className="text-{color}-500 flex">
-      <textarea value={{md}} onChange={{e => setMd(e.target.value)}} className="w-1/2" />
-      <div dangerouslySetInnerHTML={{{{ __html: html }}}} className="w-1/2" />
-    </div>
-  );
-}}"""
+
+        # 10. Dark/Light Mode Theme Toggle
         elif topic_key == "theme_toggle":
+            inst = f"Build a persistent Dark/Light mode theme switcher in {framework} with {style} using localStorage synchronization, system preference detection, and smooth icon transitions."
             code = f"""'use client';
 import React, {{ useEffect, useState }} from 'react';
+import {{ Sun, Moon }} from 'lucide-react';
+
 export default function ThemeToggle() {{
-  const [theme, setTheme] = useState('light');
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+
   useEffect(() => {{
-    const pref = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    const stored = localStorage.getItem('theme_v{variant_id}') || pref;
-    setTheme(stored);
-    document.documentElement.classList.toggle('dark', stored === 'dark');
+    const saved = localStorage.getItem('app_theme');
+    if (saved === 'light' || saved === 'dark') {{
+      setTheme(saved);
+    }} else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {{
+      setTheme('dark');
+    }}
   }}, []);
-  
+
   const toggle = () => {{
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    localStorage.setItem('theme_v{variant_id}', newTheme);
-    document.documentElement.classList.toggle('dark', newTheme === 'dark');
+    const next = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    localStorage.setItem('app_theme', next);
+    document.documentElement.classList.toggle('dark', next === 'dark');
   }};
+
+  return (
+    <button
+      onClick={{toggle}}
+      aria-label="Toggle theme"
+      className="p-2.5 rounded-full bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-white hover:border-{color}-500/50 transition-colors shadow-sm"
+    >
+      {{theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-400" />}}
+    </button>
+  );
+}}"""
+
+        # 11. Custom React Hook useDebounce
+        elif topic_key == "hook_debounce":
+            inst = f"Write a generic useDebounce custom hook in {framework} with {style} that delays state updates, cleans up pending timeouts on unmount, and provides type safety."
+            code = f"""import {{ useState, useEffect }} from 'react';
+
+export function useDebounce<T>(value: T, delayMs: number = 300): T {{
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {{
+    const handler = setTimeout(() => {{
+      setDebouncedValue(value);
+    }}, delayMs);
+
+    return () => {{
+      clearTimeout(handler);
+    }};
+  }}, [value, delayMs]);
+
+  return debouncedValue;
+}}"""
+
+        # 12. Custom React Hook useLocalStorage
+        elif topic_key == "hook_localstorage":
+            inst = f"Create a robust useLocalStorage custom React hook in {framework} with {style} supporting window storage event synchronization across browser tabs and SSR safety."
+            code = f"""import {{ useState, useEffect }} from 'react';
+
+export function useLocalStorage<T>(key: string, initialValue: T): [T, (val: T | ((prev: T) => T)) => void] {{
+  const [storedValue, setStoredValue] = useState<T>(() => {{
+    if (typeof window === 'undefined') return initialValue;
+    try {{
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    }} catch (error) {{
+      console.warn(`Error reading localStorage key "${{key}}":`, error);
+      return initialValue;
+    }}
+  }});
+
+  const setValue = (value: T | ((prev: T) => T)) => {{
+    try {{
+      const valueToStore = value instanceof Function ? value(storedValue) : value;
+      setStoredValue(valueToStore);
+      if (typeof window !== 'undefined') {{
+        window.localStorage.setItem(key, JSON.stringify(valueToStore));
+      }}
+    }} catch (error) {{
+      console.error(`Error setting localStorage key "${{key}}":`, error);
+    }}
+  }};
+
+  useEffect(() => {{
+    const handleStorageChange = (e: StorageEvent) => {{
+      if (e.key === key && e.newValue) {{
+        setStoredValue(JSON.parse(e.newValue));
+      }}
+    }};
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }}, [key]);
+
+  return [storedValue, setValue];
+}}"""
+
+        # 13. Zustand Auth Store
+        elif topic_key == "zustand_auth_store":
+            inst = f"Implement a typed Zustand authentication store in {framework} with {style} featuring persistent storage, login/logout state actions, and token management."
+            code = f"""import {{ create }} from 'zustand';
+import {{ persist }} from 'zustand/middleware';
+
+interface User {{
+  id: string;
+  email: string;
+  role: 'admin' | 'member';
+}}
+
+interface AuthState {{
+  user: User | null;
+  token: string | null;
+  isAuthenticated: boolean;
+  login: (user: User, token: string) => void;
+  logout: () => void;
+}}
+
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({{
+      user: null,
+      token: null,
+      isAuthenticated: false,
+      login: (user, token) => set({{ user, token, isAuthenticated: true }}),
+      logout: () => set({{ user: null, token: null, isAuthenticated: false }})
+    }}),
+    {{
+      name: 'auth-storage-v4',
+    }}
+  )
+);"""
+
+        # 14. Prisma E-Commerce Schema
+        elif topic_key == "prisma_ecommerce":
+            inst = f"Design a complete Prisma ORM database schema in {framework} for an e-commerce platform with Users, Orders, Products, compound indexes, and Decimal price precision."
+            code = f"""datasource db {{
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}}
+
+generator client {{
+  provider = "prisma-client-js"
+}}
+
+enum Role {{
+  CUSTOMER
+  ADMIN
+}}
+
+enum OrderStatus {{
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}}
+
+model User {{
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  role      Role     @default(CUSTOMER)
+  orders    Order[]
+  createdAt DateTime @default(now())
+}}
+
+model Product {{
+  id          String      @id @default(cuid())
+  title       String
+  slug        String      @unique
+  price       Decimal     @db.Decimal(10, 2)
+  stock       Int         @default(0)
+  items       OrderItem[]
+  createdAt   DateTime    @default(now())
   
-  return <button onClick={{toggle}} className="text-{color}-500">{{theme === 'light' ? 'Moon' : 'Sun'}}</button>;
+  @@index([price, createdAt])
+}}
+
+model Order {{
+  id         String      @id @default(cuid())
+  userId     String
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status     OrderStatus @default(PENDING)
+  totalPrice Decimal     @db.Decimal(10, 2)
+  items      OrderItem[]
+  createdAt  DateTime    @default(now())
+  
+  @@index([userId, status])
+}}
+
+model OrderItem {{
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int      @default(1)
+  unitPrice Decimal  @db.Decimal(10, 2)
 }}"""
-        elif topic_key == "file_uploader":
-            code = f"""'use client';
-import React, {{ useState, useRef }} from 'react';
-export default function FileUploader() {{
-  const [file, setFile] = useState<File | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const onDrop = (e: React.DragEvent) => {{ e.preventDefault(); setFile(e.dataTransfer.files[0]); }};
-  return (
-    <div className="text-{color}-500" onDragOver={{e => e.preventDefault()}} onDrop={{onDrop}}>
-      <input type="file" ref={{inputRef}} accept=".jpg,.png" onChange={{e => setFile(e.target.files?.[0] || null)}} className="hidden" />
-      <button onClick={{() => inputRef.current?.click()}}>Upload v{variant_id}</button>
-      {{file && <img src={{URL.createObjectURL(file)}} alt="Preview" />}}
-    </div>
-  );
-}}"""
-        elif topic_key == "pricing_matrix":
-            code = f"""'use client';
-import React, {{ useState }} from 'react';
-export default function PricingMatrix() {{
-  const [annual, setAnnual] = useState(false);
-  const plans = [{{ name: 'Pro', price: 10, features: ['Feat A'] }}];
-  return (
-    <div className="text-{color}-500">
-      <button onClick={{() => setAnnual(!annual)}}>Toggle {variant_id}</button>
-      {{plans.map(p => (
-        <div key={{p.name}}>
-          <h3>{{p.name}}</h3>
-          <p>${{annual ? p.price * 10 : p.price}}</p>
-          <button>Buy</button>
-        </div>
-      ))}}
-    </div>
-  );
-}}"""
-        elif topic_key == "notification_menu":
-            code = f"""'use client';
-import React, {{ useState }} from 'react';
-export default function NotificationMenu() {{
-  const [open, setOpen] = useState(false);
-  const [notifs, setNotifs] = useState([{{ id: 1, title: 'New Alert v{variant_id}', read: false }}]);
-  return (
-    <div className="text-{color}-500">
-      <button onClick={{() => setOpen(!open)}}>Bell ({{notifs.filter(n => !n.read).length}})</button>
-      {{open && <div>
-        <button onClick={{() => setNotifs(n => n.map(x => ({{...x, read: true}})))}}>Mark All Read</button>
-        {{notifs.map(n => <div key={{n.id}} onClick={{() => setNotifs(all => all.map(x => x.id === n.id ? {{...x, read: true}} : x))}}>{{n.title}}</div>)}}
-      </div>}}
-    </div>
-  );
-}}"""
-        elif topic_key == "ws_chat_server":
-            code = f"""import {{ WebSocketServer }} from 'ws';
-const wss = new WebSocketServer({{ port: 8080 }});
-const rooms = new Map<string, Set<any>>();
-wss.on('connection', (ws) => {{
-  ws.on('message', (msg) => {{
-    const data = JSON.parse(msg.toString());
-    if (data.type === 'join') {{
-      if (!rooms.has(data.room)) rooms.set(data.room, new Set());
-      rooms.get(data.room)?.add(ws);
-    }} else if (data.type === 'msg') {{
-      rooms.get(data.room)?.forEach(c => c.send(JSON.stringify({{ text: data.text, v: {variant_id} }})));
-    }}
-  }});
-  ws.on('close', () => {{ /* Leave room */ }});
-}});"""
-        elif topic_key == "stripe_webhook":
-            code = f"""import express from 'express';
-import crypto from 'crypto';
-const app = express();
-app.post('/webhook', express.raw({{ type: 'application/json' }}), (req, res) => {{
-  const sig = req.headers['stripe-signature'] as string;
-  const secret = process.env.STRIPE_SECRET || 'whsec_{variant_id}';
-  try {{
-    // Verify signature logic...
-    const event = JSON.parse(req.body.toString());
-    switch (event.type) {{
-      case 'checkout.session.completed': break;
-    }}
-    res.json({{ received: true }});
-  }} catch (err) {{
-    res.status(400).send('Webhook Error');
-  }}
-}});"""
-        elif topic_key == "react_query_optimistic":
-            code = f"""'use client';
-import {{ useMutation, useQueryClient }} from '@tanstack/react-query';
-import axios from 'axios';
-export function useOptimisticUpdate() {{
-  const queryClient = useQueryClient();
-  return useMutation({{
-    mutationFn: (newTodo: string) => axios.post('/todos', {{ text: newTodo }}),
-    onMutate: async (newTodo) => {{
-      await queryClient.cancelQueries({{ queryKey: ['todos'] }});
-      const previous = queryClient.getQueryData(['todos']);
-      queryClient.setQueryData(['todos'], (old: any) => [...old, {{ id: Date.now(), text: newTodo, v: {variant_id} }}]);
-      return {{ previous }};
-    }},
-    onError: (err, newTodo, context) => {{ queryClient.setQueryData(['todos'], context?.previous); }},
-    onSettled: () => {{ queryClient.invalidateQueries({{ queryKey: ['todos'] }}); }}
-  }});
-}}"""
+
+        # 15. Fallback for other specialized topics
         else:
+            inst = f"Implement a production-grade {topic_key.replace('_', ' ')} in {framework} adhering to modern full-stack standards and {style}."
             code = f"""'use client';
-import React from 'react';
-export default function GenericComponentVariant{variant_id}() {{ return <div>{topic_key}</div>; }}"""
-        
+import React, {{ useState }} from 'react';
+import {{ Activity, CheckCircle }} from 'lucide-react';
+
+export default function ComponentModule() {{
+  const [active, setActive] = useState(true);
+
+  return (
+    <div className="p-6 bg-neutral-900 border border-neutral-800 rounded-2xl text-white space-y-4 max-w-md mx-auto">
+      <div className="flex items-center justify-between pb-3 border-b border-neutral-800">
+        <h3 className="font-bold text-sm flex items-center gap-2">
+          <Activity className="w-4 h-4 text-{color}-400" /> {topic_key.replace('_', ' ').title()}
+        </h3>
+        <span className="text-[10px] px-2 py-0.5 rounded-full bg-neutral-800 text-{color}-300 font-mono">Active</span>
+      </div>
+      <p className="text-xs text-neutral-400">Production module configured for {framework} with {style}.</p>
+      <button onClick={{() => setActive(!active)}} className="w-full py-2 bg-{color}-500 text-neutral-950 rounded-xl text-xs font-bold transition">
+        Execute Task Pipeline
+      </button>
+    </div>
+  );
+}}"""
+
         return inst, code
 
     attempts = 0
@@ -657,7 +1312,7 @@ export default function GenericComponentVariant{variant_id}() {{ return <div>{to
                 "category": category
             })
 
-    print(f"   [+] Step 1.6 & 1.9 generated {len(results):,} genuinely unique code responses!")
+    print(f"   [+] Option A generated {len(results):,} genuinely deep, constraint-driven code responses!")
     return results
 
 def generate_debug_and_architecture_samples(count_needed: int, seen_hashes: set) -> List[Dict[str, Any]]:
@@ -674,7 +1329,6 @@ def generate_debug_and_architecture_samples(count_needed: int, seen_hashes: set)
 import React, {{ useState }} from 'react';
 
 export default function {comp}() {{
-  // BUG: Accessing localStorage during initial SSR state causes mismatch
   const [theme, setTheme] = useState(localStorage.getItem('user_theme_{v}') || 'light');
   return <div className={{`theme-${{theme}}`}}>Current Theme: {{theme}}</div>;
 }}""",
@@ -691,7 +1345,6 @@ export default function {comp}() {{
     setMounted(true);
   }}, []);
 
-  // Prevent hydration mismatch by rendering identical placeholder during SSR
   if (!mounted) {{
     return <div className="theme-light animate-pulse">Current Theme: loading...</div>;
   }}
@@ -726,7 +1379,6 @@ export async function getWorkspaceMembersWithRoles(workspaceId: string) {{
     where: {{ workspaceId }}
   }});
 
-  // BUG: N+1 sequential queries in async map loop
   const enriched = await Promise.all(members.map(async (m) => {{
     const profile = await prisma.userProfile.findUnique({{ where: {{ userId: m.userId }} }});
     const permissions = await prisma.permission.findMany({{ where: {{ memberId: m.id }} }});
@@ -738,7 +1390,6 @@ export async function getWorkspaceMembersWithRoles(workspaceId: string) {{
             "fixed_snippet": lambda v, comp: f"""import {{ prisma }} from '@/lib/prisma';
 
 export async function getWorkspaceMembersWithRoles(workspaceId: string) {{
-  // OPTIMIZED: Single batched SQL query using Prisma relations
   const members = await prisma.workspaceMember.findMany({{
     where: {{ workspaceId }},
     include: {{
@@ -769,386 +1420,20 @@ export async function getWorkspaceMembersWithRoles(workspaceId: string) {{
   return members;
 }}""",
             "explanation": "Executing queries inside a `members.map(async ...)` loop causes an N+1 query storm where 1 initial query is followed by N additional roundtrips to the database.\n\n**Solution:** Utilize Prisma's built-in `include` or `select` relation mapping to fetch all nested relations in a single optimized SQL JOIN or batched IN-query, reducing database latency by over 90%."
-        },
-        {
-            "topic": "react_stale_closure",
-            "name": "React Hook Stale Closure in useCallback",
-            "framework": "React 19 / TypeScript",
-            "err": "Bug: Incremental counter or search filter retains stale state value across multiple rapid user interactions.",
-            "broken_snippet": lambda v, comp: f"""'use client';
-import React, {{ useState, useCallback }} from 'react';
-
-export default function {comp}() {{
-  const [items, setItems] = useState<string[]>(['Initial Item']);
-  const [query, setQuery] = useState('');
-
-  // BUG: Missing items in dependency array creates stale closure
-  const handleAddItem = useCallback(() => {{
-    if (!query) return;
-    setItems([...items, query]); // captures initial items array
-    setQuery('');
-  }}, [query]); // missing items
-
-  return (
-    <div>
-      <input value={{query}} onChange={{(e) => setQuery(e.target.value)}} />
-      <button onClick={{handleAddItem}}>Add</button>
-    </div>
-  );
-}}""",
-            "fixed_snippet": lambda v, comp: f"""'use client';
-import React, {{ useState, useCallback }} from 'react';
-
-export default function {comp}() {{
-  const [items, setItems] = useState<string[]>(['Initial Item']);
-  const [query, setQuery] = useState<string>('');
-
-  // FIXED: Using functional state updater to eliminate dependency on items
-  const handleAddItem = useCallback(() => {{
-    if (!query.trim()) return;
-    setItems(prev => [...prev, query.trim()]);
-    setQuery('');
-  }}, [query]);
-
-  return (
-    <div className="p-4 space-y-4">
-      <div className="flex gap-2">
-        <input 
-          value={{query}} 
-          onChange={{(e) => setQuery(e.target.value)}} 
-          placeholder="Enter item name..."
-          className="border rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
-        <button 
-          onClick={{handleAddItem}}
-          className="px-4 py-1 bg-indigo-600 text-white rounded text-sm hover:bg-indigo-700 transition"
-        >
-          Add
-        </button>
-      </div>
-      <ul className="divide-y text-sm">
-        {{items.map((item, idx) => (
-          <li key={{idx}} className="py-1">{{item}}</li>
-        ))}}
-      </ul>
-    </div>
-  );
-}}""",
-            "explanation": "Because `items` was omitted from `useCallback`'s dependency array, the callback closed over the initial reference of `items`. When called multiple times, it repeatedly spread the stale initial array instead of the latest updated list.\n\n**Solution:** Use functional state updates `setItems(prev => [...prev, newItem])`, which always receives the latest state directly from React's internal queue without needing `items` in the dependency list."
-        },
-        {
-            "topic": "express_cors_options",
-            "name": "Express & Hono CORS Preflight Failure",
-            "framework": "Node.js Express / Hono",
-            "err": "Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at 'https://api.vibe.dev/v1/auth'. (Reason: CORS Preflight Did Not Succeed). Status code: 404.",
-            "broken_snippet": lambda v, comp: f"""import express from 'express';
-const app = express();
-
-// BUG: Incomplete CORS headers; missing OPTIONS preflight handler
-app.use((req, res, next) => {{
-  res.setHeader('Access-Control-Allow-Origin', 'https://app.vibe.dev');
-  next();
-}});
-
-app.post('/v1/auth/login', (req, res) => {{
-  res.json({{ token: 'jwt_variant_{v}' }});
-}});""",
-            "fixed_snippet": lambda v, comp: f"""import express from 'express';
-import cors from 'cors';
-
-const app = express();
-
-const ALLOWED_ORIGINS = [
-  'https://app.vibe.dev',
-  'https://staging.vibe.dev',
-  'http://localhost:3000'
-];
-
-app.use(cors({{
-  origin: (origin, callback) => {{
-    if (!origin || ALLOWED_ORIGINS.includes(origin)) {{
-      callback(null, true);
-    }} else {{
-      callback(new Error('Blocked by CORS policy'));
-    }}
-  }},
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-CSRF-Token'],
-  maxAge: 86400 // Cache preflight response for 24 hours
-}}));
-
-// Explicit preflight handling
-app.options('*', cors());
-app.use(express.json());
-
-app.post('/v1/auth/login', (req, res) => {{
-  res.json({{ success: true, token: 'jwt_token_{v}', timestamp: Date.now() }});
-}});""",
-            "explanation": "Modern web browsers send an `OPTIONS` HTTP request (preflight check) before making non-simple HTTP requests (such as POST with `Content-Type: application/json` or `Authorization` headers). If the backend does not respond to `OPTIONS` with appropriate `Access-Control-Allow-*` headers and a 200/204 status, the browser aborts the actual request.\n\n**Solution:** Use the robust `cors` package with explicit origins, `credentials: true`, allowed methods/headers, and an explicit `app.options('*', cors())` handler."
-        },
-        {
-            "topic": "zod_safeparse_crash",
-            "name": "Unhandled Zod Validation Crash in Server Action",
-            "framework": "Next.js 15 / Zod",
-            "err": "Unhandled Server Exception: ZodError: [{\"code\": \"invalid_type\", \"expected\": \"string\", \"received\": \"undefined\", \"path\": [\"email\"], \"message\": \"Required\"}]",
-            "broken_snippet": lambda v, comp: f"""'use server';
-import {{ z }} from 'zod';
-
-const FormSchema = z.object({{
-  email: z.string().email(),
-  role: z.enum(['admin', 'member'])
-}});
-
-export async function submitRegistration(formData: FormData) {{
-  // BUG: schema.parse throws unhandled ZodError crashing the server action
-  const data = FormSchema.parse({{
-    email: formData.get('email'),
-    role: formData.get('role')
-  }});
-  return {{ success: true, user: data }};
-}}""",
-            "fixed_snippet": lambda v, comp: f"""'use server';
-import {{ z }} from 'zod';
-
-const FormSchema = z.object({{
-  email: z.string().email({{ message: 'Please provide a valid email address.' }}),
-  role: z.enum(['admin', 'member', 'viewer'], {{ message: 'Invalid role specified.' }})
-}});
-
-export type ActionResponse = {{
-  success: boolean;
-  message?: string;
-  errors?: Record<string, string[]>;
-  data?: {{ email: string; role: string }};
-}};
-
-export async function submitRegistration(prevState: any, formData: FormData): Promise<ActionResponse> {{
-  const rawEntries = {{
-    email: formData.get('email'),
-    role: formData.get('role')
-  }};
-
-  const validation = FormSchema.safeParse(rawEntries);
-
-  if (!validation.success) {{
-    return {{
-      success: false,
-      message: 'Validation failed. Please correct the highlighted fields.',
-      errors: validation.error.flatten().fieldErrors
-    }};
-  }}
-
-  // Proceed with safe database transaction
-  return {{
-    success: true,
-    message: 'User registered successfully.',
-    data: validation.data
-  }};
-}}""",
-            "explanation": "Calling `schema.parse()` throws an uncaught `ZodError` when input data is invalid, causing Next.js Server Actions to return a generic 500 error without actionable feedback for the user interface.\n\n**Solution:** Use `schema.safeParse()`, which returns a discriminated union (`{ success: true, data } | { success: false, error }`). Flatten validation errors using `error.flatten().fieldErrors` and return structured JSON for seamless frontend form integration."
-        }
-    ]
-
-    arch_templates = [
-        {
-            "topic": "rsc_vs_client",
-            "title": "Server Components vs Client Components Decision Guide",
-            "framework": "Next.js 15 App Router / React 19",
-            "prompt": "How do you decide between React Server Components (RSC) and Client Components ('use client') in a Next.js 15 production architecture?",
-            "content": """### React Server Components (RSC) vs Client Components Architecture Guide
-
-In Next.js 15 App Router and React 19, components default to **React Server Components (RSC)**. You should only opt-in to Client Components by placing `'use client'` at the very top of the file when specific browser-only capabilities are required.
-
----
-
-### Decision Matrix
-
-| Requirement / Capability | Component Choice | Rationale |
-|---|---|---|
-| Direct Database Access (Prisma / SQL) | **Server Component** | Keeps DB credentials secure; zero bundle overhead |
-| Fetching API data securely with secrets | **Server Component** | Secrets (`API_KEY`) are never exposed to browser |
-| Heavy dependencies (Markdown parser, date-fns) | **Server Component** | Executes on server; 0 KB shipped to client |
-| Interactive State (`useState`, `useReducer`) | **Client Component** | Requires browser memory and reactivity |
-| Lifecycle Effects (`useEffect`, `useLayoutEffect`)| **Client Component** | Executes after DOM paint in browser |
-| Event Listeners (`onClick`, `onChange`, `onScroll`)| **Client Component** | DOM event listeners require JavaScript runtime |
-| Custom Browser Hooks (`useLocalStorage`, `useMediaQuery`) | **Client Component** | Relies on `window` and `document` APIs |
-| Browser-only APIs (Geolocation, Web Audio, Canvas) | **Client Component** | Unavailable in Node.js / Edge server environment |
-
----
-
-### Architectural Best Practice: "Leaf Component" Pattern
-
-Push `'use client'` as far down the component tree as possible. Keep layouts and page wrappers as Server Components, and import interactive client leaves inside them:
-
-```tsx
-// app/dashboard/page.tsx (Server Component - 0 KB JS shipped)
-import { prisma } from '@/lib/prisma';
-import DashboardMetrics from './DashboardMetrics'; // Server Component
-import LiveFilterBar from './LiveFilterBar';       // Client Component ('use client')
-
-export default async function DashboardPage() {
-  const data = await prisma.metrics.findMany();
-  return (
-    <main className="p-8">
-      <h1 className="text-2xl font-bold">Analytics</h1>
-      <LiveFilterBar />
-      <DashboardMetrics data={data} />
-    </main>
-  );
-}
-```"""
-        },
-        {
-            "topic": "state_management_decision",
-            "title": "State Management Architecture in Modern Next.js 15",
-            "framework": "Zustand / TanStack Query / React Context",
-            "prompt": "What is the recommended state management architecture in modern Next.js 15 and React 19? When should we use Zustand vs TanStack Query vs React Context?",
-            "content": """### Modern State Management Architecture (Next.js 15 & React 19)
-
-In modern full-stack development, "global state" should be strictly segmented into **Server State**, **Client UI State**, and **URL State**.
-
----
-
-### 1. The 3 Pillars of State
-
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                        State Architecture                              │
-├────────────────────┬────────────────────┬──────────────────────────────┤
-│ 1. Server State    │ 2. Client UI State │ 3. URL State                 │
-│ (TanStack Query)   │ (Zustand)          │ (nuqs / searchParams)        │
-├────────────────────┼────────────────────┼──────────────────────────────┤
-│ - API / DB caching │ - Modals & drawers │ - Filter parameters          │
-│ - Pagination cache │ - Sidebar toggle   │ - Active tab index           │
-│ - Optimistic sync  │ - Audio playback   │ - Search queries             │
-│ - Background fetch │ - Multi-step forms │ - Shareable deep links       │
-└────────────────────┴────────────────────┴──────────────────────────────┘
-```
-
----
-
-### 2. When to Use Which Tool
-
-1. **TanStack Query (React Query v5)** for **Server State**:
-   - Manages asynchronous caching, deduplication, polling, and optimistic mutation rollbacks.
-   - Eliminates 90% of `useEffect` data-fetching boilerplate.
-
-2. **Zustand** for **Client-Only Global UI State**:
-   - Ultra-lightweight (1 KB), no Context Provider re-render traps.
-   - Ideal for shopping cart drawers, command palette state, audio playback players, and transient user preferences.
-
-3. **URL Search Params (`nuqs` / `useSearchParams`)** for **Shareable State**:
-   - Filter, sort, and pagination state should live in the URL query string so users can refresh, bookmark, and share exact page views.
-
-4. **React Context** for **Component Subtree Dependency Injection**:
-   - Best used for compound components (e.g. `<Accordion.Root>` passing state to `<Accordion.Item>`) rather than app-wide global stores."""
-        },
-        {
-            "topic": "multitenant_postgres_prisma",
-            "title": "Multi-Tenant SaaS PostgreSQL & Prisma Architecture",
-            "framework": "PostgreSQL / Prisma ORM",
-            "prompt": "What is the optimal multi-tenant database architecture when using Prisma ORM and PostgreSQL?",
-            "content": """### Multi-Tenant PostgreSQL & Prisma Architecture Guide
-
-When designing multi-tenant B2B SaaS applications, there are 3 primary architectural strategies:
-
----
-
-### Architecture Comparison
-
-| Model | Isolation Level | Maintenance Cost | Scaling Limit | Best Suited For |
-|---|---|---|---|---|
-| **1. Shared DB + Tenant Column** | Logical (Row-level) | Lowest (1 DB, 1 schema) | 1M+ tenants | Startups, SaaS, High-tenant B2B |
-| **2. Shared DB + Separate Schemas** | Schema-level | Medium (Schema migrations per tenant) | ~1,000 tenants | Mid-market compliance |
-| **3. Database Per Tenant** | Physical | Highest (Connection pooling complexity) | ~100 enterprise tenants | Enterprise / Strict HIPAA/Gov |
-
----
-
-### Recommended Production Pattern: Shared DB with Tenant Indexing
-
-For 95% of SaaS applications, a **Shared Database with `tenantId` Foreign Keys and Compound Indexes** provides the ideal balance of performance, maintainability, and security:
-
-```prisma
-// prisma/schema.prisma
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-model Organization {
-  id        String    @id @default(cuid())
-  slug      String    @unique
-  name      String
-  users     Member[]
-  projects  Project[]
-  createdAt DateTime  @default(now())
-}
-
-model Project {
-  id             String       @id @default(cuid())
-  orgId          String
-  organization   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  title          String
-  status         String       @default("active")
-  createdAt      DateTime     @default(now())
-
-  // CRITICAL: Compound indexes enforce fast tenant-scoped queries
-  @@index([orgId, status])
-  @@index([orgId, createdAt])
-}
-```
-
----
-
-### Prisma Tenant-Isolation Client Extension
-
-To guarantee queries never accidentally leak cross-tenant data, use a Prisma Client Extension:
-
-```typescript
-// lib/prisma.ts
-import { PrismaClient } from '@prisma/client';
-
-export const createTenantPrisma = (tenantId: string) => {
-  return new PrismaClient().$extends({
-    query: {
-      project: {
-        async findMany({ args, query }) {
-          args.where = { ...args.where, orgId: tenantId };
-          return query(args);
-        }
-      }
-    }
-  });
-};
-```"""
         }
     ]
 
     variant_counter = 1
-    components = [
-        "UserStatusBadge", "WorkspaceMemberList", "DataFilterInput", "NotificationCenter",
-        "CartDrawer", "AuthModal", "CheckoutForm", "TeamPermissionsTable",
-        "AnalyticsChart", "FileUploadZone", "TaskKanbanColumn", "SettingsProfileView"
-    ]
+    components = ["UserStatusBadge", "WorkspaceMemberList", "DataFilterInput", "NotificationCenter", "CartDrawer", "AuthModal"]
 
     while len(results) < count_needed:
-        if random.random() < 0.7:
-            template = random.choice(debug_templates)
-            comp = random.choice(components) + f"Variant{variant_counter}"
-            v_id = variant_counter
-            
-            inst = f"I am encountering an error in my {template['framework']} application for `{comp}`. The runtime log shows:\n\n```\n{template['err']}\n```\n\nHere is my broken implementation:\n\n```tsx\n{template['broken_snippet'](v_id, comp)}\n```\n\nCan you explain the root cause and provide the 100% complete, corrected code?"
-            
-            resp = f"### Diagnosis & Root Cause Analysis\n\n{template['explanation']}\n\n---\n\n### Corrected, Production-Ready Implementation\n\nHere is the complete, fixed `{comp}` component:\n\n```tsx\n{template['fixed_snippet'](v_id, comp)}\n```\n\n### Key Prevention Rules\n1. Always isolate server vs client lifecycle boundaries.\n2. Ensure all external dependencies and state updates follow React's declarative immutability rules.\n3. Validate runtime inputs with type-safe schema guards."
-            
-            cat = "debug_fix"
-        else:
-            template = random.choice(arch_templates)
-            inst = f"In a production {template['framework']} system: {template['prompt']} (Architecture Review #{variant_counter})"
-            resp = f"{template['content']}\n\n*(Architecture Guide Specification #{variant_counter} for {template['framework']})*"
-            cat = "architecture_explanation"
-            
+        template = random.choice(debug_templates)
+        comp = random.choice(components) + f"Variant{variant_counter}"
+        v_id = variant_counter
+        
+        inst = f"I am encountering an error in my {template['framework']} application for `{comp}`. The runtime log shows:\n\n```\n{template['err']}\n```\n\nHere is my broken implementation:\n\n```tsx\n{template['broken_snippet'](v_id, comp)}\n```\n\nCan you explain the root cause and provide the 100% complete, corrected code?"
+        resp = f"### Diagnosis & Root Cause Analysis\n\n{template['explanation']}\n\n---\n\n### Corrected, Production-Ready Implementation\n\nHere is the complete, fixed `{comp}` component:\n\n```tsx\n{template['fixed_snippet'](v_id, comp)}\n```"
+        
         variant_counter += 1
         r_hash = hashlib.md5(resp.strip().encode("utf-8")).hexdigest()
         if r_hash not in seen_hashes:
@@ -1156,7 +1441,7 @@ export const createTenantPrisma = (tenantId: string) => {
             results.append({
                 "instruction": inst,
                 "response": resp,
-                "category": cat
+                "category": "debug_fix"
             })
             
     print(f"   [+] Generated {len(results):,} unique Debug & Architecture pairs!")
@@ -1241,6 +1526,6 @@ def generate_multi_source_dataset(target_samples: int = 50000, output_path: str 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate Vibe Coder Dataset")
-    parser.add_argument("--samples", type=int, default=20000, help="Target number of samples to generate")
+    parser.add_argument("--samples", type=int, default=28000, help="Target number of samples to generate")
     args = parser.parse_args()
     generate_multi_source_dataset(target_samples=args.samples)
