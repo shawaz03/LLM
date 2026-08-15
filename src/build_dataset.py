@@ -226,7 +226,18 @@ def generate_combinatorial_web_samples(count_needed: int, seen_hashes: set) -> L
     ]
     
     def build_code_response(topic_key: str, framework: str, style: str, variant_id: int) -> Tuple[str, str]:
-        inst = f"Write a 100% complete, production-grade {topic_key.replace('_', ' ')} in {framework} styled with {style} (Variant #{variant_id})."
+        topic_name = topic_key.replace('_', ' ')
+        prompt_templates = [
+            f"Build a production-ready {topic_name} using {framework} styled with {style}.",
+            f"How do I create a {topic_name} in {framework} with {style} design patterns?",
+            f"I need a complete {topic_name} for my {framework} application styled in {style}.",
+            f"Can you write a clean, high-performance {topic_name} component in {framework} with {style} aesthetics?",
+            f"Implement a modern {topic_name} in {framework} with {style}. Ensure full TypeScript type safety and zero placeholders.",
+            f"Create a fully responsive {topic_name} using {framework} and {style}.",
+            f"Please provide the complete code for a {topic_name} built with {framework} and styled using {style}.",
+            f"Develop a robust {topic_name} in {framework} adhering to {style} visual guidelines."
+        ]
+        inst = prompt_templates[variant_id % len(prompt_templates)]
         colors = ['emerald', 'indigo', 'amber', 'rose', 'cyan', 'violet', 'teal']
         color = colors[variant_id % 7]
         
