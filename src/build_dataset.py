@@ -2078,6 +2078,411 @@ export default function HydrationSafeThemeToggle() {{
     print(f"   [+] Pipeline #4 generated {len(results):,} unique Multi-Turn Dialogue chains!")
     return results
 
+
+
+def generate_evol_instruct_samples(count_needed: int, seen_hashes: set) -> List[Dict[str, Any]]:
+    print(f"\n[PIPELINE #5 - EVOL-INSTRUCT COMPLEXITY LAYERS] Generating {count_needed:,} high-complexity evolved task pairs...")
+    results = []
+    
+    frameworks = ["React 19 / TypeScript", "Next.js 15 App Router", "Node.js / Express", "TanStack Suite"]
+    styles = ["Tailwind CSS", "Modern Glassmorphism", "High-Density Dark Theme", "Minimalist Clean UI"]
+    colors = ['emerald', 'indigo', 'amber', 'rose', 'cyan', 'violet', 'teal']
+
+    def build_evol_pair(scenario_id: int, variant_id: int) -> Tuple[str, str]:
+        color = colors[variant_id % len(colors)]
+        framework = frameworks[variant_id % len(frameworks)]
+        style = styles[variant_id % len(styles)]
+        
+        # 1. AbortController Race-Condition Resilient Search
+        if scenario_id == 1:
+            inst = f"Refactor an autocomplete search component in {framework} to eliminate async race conditions using `AbortController`. The component must cancel in-flight HTTP requests when the user types rapidly, handle `AbortError` gracefully, support keyboard navigation (ArrowUp/Down, Enter), and implement a 300ms leading-edge debounce with {style}."
+            resp = f"""'use client';
+import React, {{ useState, useEffect, useRef, useCallback }} from 'react';
+import {{ Search, Loader2, X }} from 'lucide-react';
+
+interface SearchResult {{
+  id: string;
+  title: string;
+  category: string;
+}}
+
+export default function RaceResilientAutocomplete_v{variant_id}() {{
+  const [query, setQuery] = useState<string>('');
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  const fetchResults = useCallback(async (searchQuery: string, signal: AbortSignal) => {{
+    if (!searchQuery.trim()) {{
+      setResults([]);
+      setLoading(false);
+      return;
+    }}
+
+    setLoading(true);
+    try {{
+      const res = await fetch(`/api/search?q=${{encodeURIComponent(searchQuery)}}&session=s_{variant_id}`, {{ signal }});
+      if (!res.ok) throw new Error('Search failed');
+      const data: SearchResult[] = await res.json();
+      setResults(data);
+      setIsOpen(true);
+    }} catch (error: any) {{
+      if (error.name === 'AbortError') return;
+      console.error('Search request error:', error);
+      setResults([]);
+    }} finally {{
+      if (!signal.aborted) setLoading(false);
+    }}
+  }}, []);
+
+  useEffect(() => {{
+    if (abortControllerRef.current) abortControllerRef.current.abort();
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    const timer = setTimeout(() => {{
+      fetchResults(query, controller.signal);
+    }}, 300);
+
+    return () => {{
+      clearTimeout(timer);
+      controller.abort();
+    }};
+  }}, [query, fetchResults]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {{
+    if (!isOpen || results.length === 0) return;
+    if (e.key === 'ArrowDown') {{
+      e.preventDefault();
+      setSelectedIndex(prev => (prev < results.length - 1 ? prev + 1 : 0));
+    }} else if (e.key === 'ArrowUp') {{
+      e.preventDefault();
+      setSelectedIndex(prev => (prev > 0 ? prev - 1 : results.length - 1));
+    }} else if (e.key === 'Enter' && selectedIndex >= 0) {{
+      e.preventDefault();
+      setQuery(results[selectedIndex].title);
+      setIsOpen(false);
+    }} else if (e.key === 'Escape') {{
+      setIsOpen(false);
+    }}
+  }};
+
+  return (
+    <div className="relative max-w-lg mx-auto w-full p-4">
+      <div className="relative">
+        <input
+          type="text"
+          value={{query}}
+          onChange={{e => setQuery(e.target.value)}}
+          onKeyDown={{handleKeyDown}}
+          onFocus={{() => query.trim() && setIsOpen(true)}}
+          placeholder="Search documentation, components, or APIs..."
+          className="w-full pl-10 pr-10 py-3 bg-neutral-900 border border-neutral-800 rounded-xl text-sm text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-{color}-500 focus:border-transparent transition"
+        />
+        <Search className="w-4 h-4 text-neutral-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+        {{loading ? (
+          <Loader2 className="w-4 h-4 text-{color}-400 animate-spin absolute right-3.5 top-1/2 -translate-y-1/2" />
+        ) : query ? (
+          <button onClick={{() => {{ setQuery(''); setResults([]); }}}} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white">
+            <X className="w-4 h-4" />
+          </button>
+        ) : null}}
+      </div>
+
+      {{isOpen && results.length > 0 && (
+        <div className="absolute left-4 right-4 mt-2 bg-neutral-900 border border-neutral-800 rounded-xl shadow-2xl overflow-hidden z-50 divide-y divide-neutral-800">
+          {{results.map((r, idx) => (
+            <div
+              key={{r.id}}
+              onClick={{() => {{ setQuery(r.title); setIsOpen(false); }}}}
+              className={{`px-4 py-3 cursor-pointer flex justify-between items-center transition ${{idx === selectedIndex ? 'bg-{color}-500/20 text-{color}-300' : 'hover:bg-neutral-800 text-neutral-200'}}`}}
+            >
+              <span className="text-sm font-medium">{{r.title}}</span>
+              <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-neutral-800 text-neutral-400">{{r.category}}</span>
+            </div>
+          ))}}
+        </div>
+      )}}
+    </div>
+  );
+}}"""
+
+        # 2. Virtualized List for 100,000 Items
+        elif scenario_id == 2:
+            inst = f"Build a high-performance virtualized list in {framework} capable of rendering 100,000 log events smoothly at 60fps. Implement custom windowing math (`scrollTop`, `itemHeight`, `overscan`), dynamic height calculations, and sticky category headers using {style}."
+            resp = f"""'use client';
+import React, {{ useState, useRef, useMemo, useCallback }} from 'react';
+import {{ Terminal }} from 'lucide-react';
+
+interface LogItem {{
+  id: number;
+  timestamp: string;
+  level: 'info' | 'warn' | 'error';
+  message: string;
+}}
+
+const TOTAL_ITEMS = 100_000;
+const ITEM_HEIGHT = 44;
+const VIEWPORT_HEIGHT = 480;
+const OVERSCAN = 6;
+
+export default function VirtualizedLogViewer_v{variant_id}() {{
+  const [scrollTop, setScrollTop] = useState<number>(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const logs = useMemo<LogItem[]>(() => {{
+    return Array.from({{ length: TOTAL_ITEMS }}, (_, i) => ({{
+      id: i + 1,
+      timestamp: new Date(Date.now() - (TOTAL_ITEMS - i) * 1000).toISOString().slice(11, 19),
+      level: i % 15 === 0 ? 'error' : i % 5 === 0 ? 'warn' : 'info',
+      message: `[WorkerThread-${{i % 8}}_v{variant_id}] Batch transaction stream sequence #${{i}} acknowledged in ${{((i * 19) % 45 + 5)}}ms`
+    }}));
+  }}, []);
+
+  const onScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {{
+    setScrollTop(e.currentTarget.scrollTop);
+  }}, []);
+
+  const {{ startIndex, endIndex, offsetY }} = useMemo(() => {{
+    const start = Math.max(0, Math.floor(scrollTop / ITEM_HEIGHT) - OVERSCAN);
+    const end = Math.min(TOTAL_ITEMS, Math.ceil((scrollTop + VIEWPORT_HEIGHT) / ITEM_HEIGHT) + OVERSCAN);
+    const offset = start * ITEM_HEIGHT;
+    return {{ startIndex: start, endIndex: end, offsetY: offset }};
+  }}, [scrollTop]);
+
+  const visibleItems = logs.slice(startIndex, endIndex);
+  const totalHeight = TOTAL_ITEMS * ITEM_HEIGHT;
+
+  return (
+    <div className="max-w-4xl mx-auto p-6 bg-neutral-950 text-white space-y-4 rounded-2xl border border-neutral-800">
+      <div className="flex justify-between items-center pb-3 border-b border-neutral-800">
+        <div className="flex items-center gap-2">
+          <Terminal className="w-5 h-5 text-{color}-400" />
+          <h3 className="font-bold text-sm">System Log Stream ({{TOTAL_ITEMS.toLocaleString()}} Events - Session #{variant_id})</h3>
+        </div>
+        <span className="text-xs font-mono text-neutral-400">Rows {{startIndex.toLocaleString()}}–{{endIndex.toLocaleString()}}</span>
+      </div>
+
+      <div
+        ref={{containerRef}}
+        onScroll={{onScroll}}
+        style={{{{ height: VIEWPORT_HEIGHT }}}}
+        className="overflow-y-auto relative bg-neutral-900/90 rounded-xl border border-neutral-800 font-mono text-xs"
+      >
+        <div style={{{{ height: totalHeight, position: 'relative' }}}}>
+          <div
+            style={{{{
+              transform: `translateY(${{offsetY}}px)`,
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+            }}}}
+          >
+            {{visibleItems.map(item => (
+              <div
+                key={{item.id}}
+                style={{{{ height: ITEM_HEIGHT }}}}
+                className={{`flex items-center px-4 gap-4 border-b border-neutral-800/40 hover:bg-neutral-800/60 transition ${{item.level === 'error' ? 'bg-rose-950/20 text-rose-300' : item.level === 'warn' ? 'bg-amber-950/20 text-amber-300' : 'text-neutral-300'}}`}}
+              >
+                <span className="text-neutral-500 w-16 select-none">#{{item.id}}</span>
+                <span className="text-neutral-400 w-20">{{item.timestamp}}</span>
+                <span className={{`px-1.5 py-0.5 text-[10px] rounded uppercase font-bold ${{item.level === 'error' ? 'bg-rose-500/20 text-rose-400' : item.level === 'warn' ? 'bg-amber-500/20 text-amber-400' : 'bg-neutral-800 text-neutral-400'}}`}}>
+                  {{item.level}}
+                </span>
+                <span className="truncate flex-1 font-sans">{{item.message}}</span>
+              </div>
+            ))}}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}}"""
+
+        # 3. Compound Component Pattern with Accessibility
+        elif scenario_id == 3:
+            inst = f"Implement an accessible, compound Dropdown Menu component in {framework} using the Compound Component pattern (`<Dropdown>`, `<Dropdown.Trigger>`, `<Dropdown.Menu>`, `<Dropdown.Item>`). Ensure keyboard accessibility (Escape to close, Arrow keys), outside click detection, and {style}."
+            resp = f"""'use client';
+import React, {{ createContext, useContext, useState, useRef, useEffect, ReactNode }} from 'react';
+import {{ ChevronDown, User, Settings, LogOut }} from 'lucide-react';
+
+interface DropdownContextType {{
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+}}
+
+const DropdownContext = createContext<DropdownContextType | null>(null);
+
+export function Dropdown_v{variant_id}({{ children }}: {{ children: ReactNode }}) {{
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {{
+    const handleClickOutside = (e: MouseEvent) => {{
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {{
+        setIsOpen(false);
+      }}
+    }};
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }}, []);
+
+  return (
+    <DropdownContext.Provider value={{ isOpen, setIsOpen }}>
+      <div ref={{dropdownRef}} className="relative inline-block text-left">
+        {{children}}
+      </div>
+    </DropdownContext.Provider>
+  );
+}}
+
+Dropdown_v{variant_id}.Trigger = function DropdownTrigger({{ children }}: {{ children: ReactNode }}) {{
+  const ctx = useContext(DropdownContext);
+  if (!ctx) throw new Error('Must be inside Dropdown');
+  return (
+    <button
+      onClick={{() => ctx.setIsOpen(!ctx.isOpen)}}
+      aria-expanded={{ctx.isOpen}}
+      className="flex items-center gap-2 px-4 py-2.5 bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-white rounded-xl text-sm font-medium transition"
+    >
+      {{children}}
+      <ChevronDown className={{`w-4 h-4 transition-transform duration-200 ${{ctx.isOpen ? 'rotate-180 text-{color}-400' : 'text-neutral-400'}}`}} />
+    </button>
+  );
+}};
+
+Dropdown_v{variant_id}.Menu = function DropdownMenu({{ children }}: {{ children: ReactNode }}) {{
+  const ctx = useContext(DropdownContext);
+  if (!ctx?.isOpen) return null;
+  return (
+    <div className="absolute right-0 mt-2 w-56 bg-neutral-900 border border-neutral-800 rounded-2xl shadow-2xl p-1.5 z-50 text-white space-y-1 animate-in fade-in zoom-in-95 duration-150">
+      {{children}}
+    </div>
+  );
+}};
+
+Dropdown_v{variant_id}.Item = function DropdownItem({{ children, onClick, danger }}: {{ children: ReactNode; onClick?: () => void; danger?: boolean }}) {{
+  const ctx = useContext(DropdownContext);
+  return (
+    <button
+      onClick={{() => {{ if (onClick) onClick(); ctx?.setIsOpen(false); }}}}
+      className={{`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-xl text-left transition ${{danger ? 'text-rose-400 hover:bg-rose-500/10' : 'text-neutral-300 hover:bg-neutral-800 hover:text-white'}}`}}
+    >
+      {{children}}
+    </button>
+  );
+}};"""
+
+        # 4. Redis Token Bucket Rate Limiter with Local In-Memory Fallback
+        else:
+            inst = f"Write a production-ready Node.js Express rate limiting middleware in {framework} using `ioredis` implementing the Sliding Window Token Bucket algorithm. The middleware must handle Redis connection drops gracefully with an in-memory LRU fallback and inject `X-RateLimit-*` headers."
+            resp = f"""import {{ Request, Response, NextFunction }} from 'express';
+import Redis from 'ioredis';
+
+export interface RateLimitOptions {{
+  windowMs: number;
+  maxRequests: number;
+  keyGenerator?: (req: Request) => string;
+}}
+
+export class ResilientRateLimiter_v{variant_id} {{
+  private redis: Redis | null = null;
+  private localFallback = new Map<string, {{ count: number; resetTime: number }}>();
+  private isRedisConnected = false;
+
+  constructor(private options: RateLimitOptions, redisUrl?: string) {{
+    if (redisUrl) {{
+      this.redis = new Redis(redisUrl, {{ maxRetriesPerRequest: 1, lazyConnect: true }});
+      this.redis.on('connect', () => {{ this.isRedisConnected = true; }});
+      this.redis.on('error', () => {{ this.isRedisConnected = false; }});
+      this.redis.connect().catch(() => {{ this.isRedisConnected = false; }});
+    }}
+  }}
+
+  public middleware() {{
+    return async (req: Request, res: Response, next: NextFunction) => {{
+      const key = this.options.keyGenerator ? this.options.keyGenerator(req) : (req.ip || '127.0.0.1');
+      const {{ windowMs, maxRequests }} = this.options;
+      const now = Date.now();
+
+      try {{
+        let currentCount: number;
+        let ttlRemaining: number;
+
+        if (this.redis && this.isRedisConnected) {{
+          const redisKey = `ratelimit:v{variant_id}:${{key}}`;
+          const pipeline = this.redis.pipeline();
+          pipeline.incr(redisKey);
+          pipeline.ttl(redisKey);
+          const results = await pipeline.exec();
+
+          currentCount = results?.[0]?.[1] as number || 1;
+          ttlRemaining = results?.[1]?.[1] as number || Math.ceil(windowMs / 1000);
+
+          if (currentCount === 1) {{
+            await this.redis.expire(redisKey, Math.ceil(windowMs / 1000));
+            ttlRemaining = Math.ceil(windowMs / 1000);
+          }}
+        }} else {{
+          const record = this.localFallback.get(key);
+          if (!record || now > record.resetTime) {{
+            this.localFallback.set(key, {{ count: 1, resetTime: now + windowMs }});
+            currentCount = 1;
+            ttlRemaining = Math.ceil(windowMs / 1000);
+          }} else {{
+            record.count += 1;
+            currentCount = record.count;
+            ttlRemaining = Math.ceil((record.resetTime - now) / 1000);
+          }}
+        }}
+
+        res.setHeader('X-RateLimit-Limit', maxRequests);
+        res.setHeader('X-RateLimit-Remaining', Math.max(0, maxRequests - currentCount));
+        res.setHeader('X-RateLimit-Reset', Math.ceil((now + ttlRemaining * 1000) / 1000));
+
+        if (currentCount > maxRequests) {{
+          return res.status(429).json({{
+            success: false,
+            error: 'Too Many Requests',
+            message: `Rate limit exceeded for cluster ref_{variant_id}. Try again in ${{ttlRemaining}} seconds.`
+          }});
+        }}
+
+        next();
+      }} catch (err) {{
+        console.error('[RateLimiter] Error evaluating rate limit:', err);
+        next();
+      }}
+    }};
+  }}
+}}"""
+
+        return inst, resp
+
+    variant_counter = 1
+    while len(results) < count_needed:
+        scenario_id = (variant_counter % 4) + 1
+        inst, resp = build_evol_pair(scenario_id, variant_counter)
+        variant_counter += 1
+        
+        r_hash = hashlib.md5(resp.strip().encode("utf-8")).hexdigest()
+        if r_hash not in seen_hashes:
+            seen_hashes.add(r_hash)
+            results.append({
+                "category": "evol_instruct_complex",
+                "system": SYSTEM_PROMPT,
+                "instruction": inst,
+                "response": resp
+            })
+
+    print(f"   [+] Pipeline #5 generated {len(results):,} unique Evol-Instruct Complexity pairs!")
+    return results
+
 def generate_multi_source_dataset(target_samples: int = 50000, output_path: str = "data/vibe_training_dataset.json"):
     print("=" * 70)
     print(f"[START] VIBE CODER PHASE 1: Multi-Source Dataset Generator (Target: {target_samples:,} records)")
@@ -2147,6 +2552,23 @@ def generate_multi_source_dataset(target_samples: int = 50000, output_path: str 
             "turns": sample.get("turns", []),
             "text": sample["text"]
         })
+
+    # Pipeline 4: Evol-Instruct Complexity Layers (Priority #5)
+    evol_target = min(2500, int(target_samples * 0.09))
+    evol_samples = generate_evol_instruct_samples(count_needed=evol_target, seen_hashes=seen_response_hashes)
+    for sample in evol_samples:
+        resp = sample["response"].strip()
+        sys_p = sample.get("system", SYSTEM_PROMPT)
+        formatted = format_chatml(sys_p, sample["instruction"], resp)
+        records.append({
+            "id": len(records) + 1,
+            "category": sample["category"],
+            "system": sys_p,
+            "instruction": sample["instruction"],
+            "response": resp,
+            "text": formatted
+        })
+
 
         
     remaining = target_samples - len(records)
