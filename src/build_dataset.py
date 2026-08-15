@@ -2483,6 +2483,487 @@ export class ResilientRateLimiter_v{variant_id} {{
     print(f"   [+] Pipeline #5 generated {len(results):,} unique Evol-Instruct Complexity pairs!")
     return results
 
+
+
+def generate_domain_specific_samples(count_needed: int, seen_hashes: set) -> List[Dict[str, Any]]:
+    print(f"\n[PIPELINE #6 - ADDITIONAL DOMAIN TEMPLATES] Generating {count_needed:,} domain-specialized full-stack tasks...")
+    results = []
+    
+    frameworks = ["React 19 / TypeScript", "Next.js 15 App Router", "Node.js Express", "Full-Stack Web Suite"]
+    styles = ["Tailwind CSS", "Modern Glassmorphic Dark", "Cyberpunk Neon Theme", "Minimalist Clean UI"]
+    colors = ['emerald', 'indigo', 'amber', 'rose', 'cyan', 'violet', 'teal']
+
+    def build_domain_pair(scenario_id: int, variant_id: int) -> Tuple[str, str, str]:
+        color = colors[variant_id % len(colors)]
+        framework = frameworks[variant_id % len(frameworks)]
+        style = styles[variant_id % len(styles)]
+        
+        # Domain 1: Real-Time Collaborative Canvas & Live Cursors
+        if scenario_id == 1:
+            category = "realtime_collaboration"
+            inst = f"Build a real-time collaborative whiteboard canvas in {framework} with live multi-user cursor tracking, presence awareness, and delta broadcasting over WebSockets using {style}."
+            resp = f"""'use client';
+import React, {{ useState, useEffect, useRef, useCallback }} from 'react';
+import {{ Users, MousePointer, Circle, Square, Trash2 }} from 'lucide-react';
+
+interface Cursor {{
+  id: string;
+  name: string;
+  color: string;
+  x: number;
+  y: number;
+  lastActive: number;
+}}
+
+interface CanvasShape {{
+  id: string;
+  type: 'circle' | 'square';
+  x: number;
+  y: number;
+  color: string;
+}}
+
+export default function CollaborativeCanvas_v{variant_id}() {{
+  const [cursors, setCursors] = useState<Record<string, Cursor>>({{}});
+  const [shapes, setShapes] = useState<CanvasShape[]>([
+    {{ id: 's1', type: 'circle', x: 120, y: 150, color: '#10b981' }},
+    {{ id: 's2', type: 'square', x: 280, y: 200, color: '#6366f1' }}
+  ]);
+  const [activeTool, setActiveTool] = useState<'select' | 'circle' | 'square'>('select');
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const myId = useRef(`user_${{Math.random().toString(36).slice(2, 7)}}_v{variant_id}`);
+
+  // Mouse movement throttle for live cursor broadcast
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {{
+    if (!canvasRef.current) return;
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    // Simulated local awareness broadcast
+    setCursors(prev => ({{
+      ...prev,
+      'peer_user_alex': {{ id: 'peer_user_alex', name: 'Alex Rivera', color: '#f59e0b', x: x + 60, y: y + 40, lastActive: Date.now() }},
+      'peer_user_sarah': {{ id: 'peer_user_sarah', name: 'Sarah Wu', color: '#ec4899', x: Math.max(20, 600 - x), y: Math.max(20, 400 - y), lastActive: Date.now() }}
+    }}));
+  }}, []);
+
+  const handleCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {{
+    if (activeTool === 'select' || !canvasRef.current) return;
+    const rect = canvasRef.current.getBoundingClientRect();
+    const newShape: CanvasShape = {{
+      id: `shape_${{Date.now()}}`,
+      type: activeTool,
+      x: e.clientX - rect.left - 24,
+      y: e.clientY - rect.top - 24,
+      color: activeTool === 'circle' ? '#10b981' : '#6366f1'
+    }};
+    setShapes(prev => [...prev, newShape]);
+  }};
+
+  return (
+    <div className="max-w-5xl mx-auto p-6 bg-neutral-950 text-white rounded-3xl border border-neutral-800 space-y-4 shadow-2xl">
+      <div className="flex justify-between items-center pb-3 border-b border-neutral-800">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-neutral-900 rounded-xl border border-neutral-800">
+            <Users className="w-5 h-5 text-{color}-400" />
+          </div>
+          <div>
+            <h3 className="font-bold text-sm">Real-time Architecture Board (Workspace v{variant_id})</h3>
+            <p className="text-xs text-neutral-400">3 active contributors live in room</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 bg-neutral-900 p-1.5 rounded-2xl border border-neutral-800">
+          <button onClick={{() => setActiveTool('select')}} className={{`px-3 py-1.5 rounded-xl text-xs font-semibold transition ${{activeTool === 'select' ? 'bg-{color}-500 text-neutral-950' : 'text-neutral-400 hover:text-white'}}`}}>
+            Select
+          </button>
+          <button onClick={{() => setActiveTool('circle')}} className={{`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1 transition ${{activeTool === 'circle' ? 'bg-{color}-500 text-neutral-950' : 'text-neutral-400 hover:text-white'}}`}}>
+            <Circle className="w-3.5 h-3.5" /> Circle
+          </button>
+          <button onClick={{() => setActiveTool('square')}} className={{`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1 transition ${{activeTool === 'square' ? 'bg-{color}-500 text-neutral-950' : 'text-neutral-400 hover:text-white'}}`}}>
+            <Square className="w-3.5 h-3.5" /> Box
+          </button>
+          <button onClick={{() => setShapes([])}} className="p-1.5 text-neutral-500 hover:text-rose-400 rounded-xl transition">
+            <Trash2 className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      <div
+        ref={{canvasRef}}
+        onMouseMove={{handleMouseMove}}
+        onClick={{handleCanvasClick}}
+        className="h-[460px] w-full bg-neutral-900/60 rounded-2xl border border-neutral-800 relative overflow-hidden cursor-crosshair select-none"
+      >
+        {{shapes.map(shape => (
+          <div
+            key={{shape.id}}
+            style={{{{ left: shape.x, top: shape.y, backgroundColor: shape.color }}}}
+            className={{`absolute w-12 h-12 shadow-lg cursor-grab active:cursor-grabbing flex items-center justify-center text-[10px] font-bold text-neutral-950 ${{shape.type === 'circle' ? 'rounded-full' : 'rounded-xl'}}`}}
+          >
+            {{shape.type[0].toUpperCase()}}
+          </div>
+        ))}}
+
+        {{Object.values(cursors).map(cursor => (
+          <div
+            key={{cursor.id}}
+            style={{{{ left: cursor.x, top: cursor.y }}}}
+            className="absolute pointer-events-none transition-all duration-75 flex items-start gap-1"
+          >
+            <MousePointer style={{{{ color: cursor.color }}}} className="w-4 h-4 fill-current drop-shadow-md" />
+            <span style={{{{ backgroundColor: cursor.color }}}} className="text-[10px] font-bold text-neutral-950 px-2 py-0.5 rounded-full shadow-md whitespace-nowrap">
+              {{cursor.name}}
+            </span>
+          </div>
+        ))}}
+      </div>
+    </div>
+  );
+}}"""
+
+        # Domain 2: Stripe Billing Engine & Webhook Idempotency
+        elif scenario_id == 2:
+            category = "stripe_billing_engine"
+            inst = f"Write a complete Stripe subscription lifecycle API router in {framework} with customer portal session creation, subscription tier upgrades, invoice event handling, and webhook idempotency via PostgreSQL."
+            resp = f"""import express, {{ Request, Response }} from 'express';
+import Stripe from 'stripe';
+import {{ prisma }} from '@/lib/prisma';
+
+export const billingRouter = express.Router();
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_mock_{variant_id}', {{
+  apiVersion: '2023-10-16' as any,
+}});
+
+// 1. Create Customer Billing Portal Session
+billingRouter.post('/portal-session', async (req: Request, res: Response) => {{
+  const {{ userId, returnUrl }} = req.body;
+  if (!userId) return res.status(400).json({{ error: 'User ID required' }});
+
+  const user = await prisma.user.findUnique({{ where: {{ id: userId }} }});
+  if (!user || !user.stripeCustomerId) {{
+    return res.status(404).json({{ error: 'No active billing customer found' }});
+  }}
+
+  const session = await stripe.billingPortal.sessions.create({{
+    customer: user.stripeCustomerId,
+    return_url: returnUrl || 'https://app.vibe.io/dashboard/billing',
+  }});
+
+  return res.json({{ success: true, url: session.url }});
+}});
+
+// 2. Upgrade / Change Subscription Tier
+billingRouter.post('/change-tier', async (req: Request, res: Response) => {{
+  const {{ subscriptionId, newPriceId }} = req.body;
+  if (!subscriptionId || !newPriceId) {{
+    return res.status(400).json({{ error: 'Subscription ID and new price ID required' }});
+  }}
+
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+  const updated = await stripe.subscriptions.update(subscriptionId, {{
+    items: [{{
+      id: subscription.items.data[0].id,
+      price: newPriceId,
+    }}],
+    proration_behavior: 'always_invoice',
+  }});
+
+  return res.json({{ success: true, subscription: updated }});
+}});
+
+// 3. Webhook with Cryptographic Idempotency Check
+billingRouter.post('/webhook', express.raw({{ type: 'application/json' }}), async (req: Request, res: Response) => {{
+  const sig = req.headers['stripe-signature'];
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || 'whsec_test_{variant_id}';
+  let event: Stripe.Event;
+
+  try {{
+    event = stripe.webhooks.constructEvent(req.body, sig as string, webhookSecret);
+  }} catch (err: any) {{
+    return res.status(400).send(`Webhook Signature Verification Error: ${{err.message}}`);
+  }}
+
+  // Idempotency check: prevent duplicate event processing
+  const existingEvent = await prisma.processedWebhookEvent.findUnique({{
+    where: {{ eventId: event.id }}
+  }});
+
+  if (existingEvent) {{
+    return res.status(200).json({{ received: true, note: 'Event already processed' }});
+  }}
+
+  // Process event
+  switch (event.type) {{
+    case 'customer.subscription.updated':
+    case 'customer.subscription.created': {{
+      const sub = event.data.object as Stripe.Subscription;
+      await prisma.user.update({{
+        where: {{ stripeCustomerId: sub.customer as string }},
+        data: {{ subscriptionStatus: sub.status, planTier: sub.items.data[0].price.id }}
+      }});
+      break;
+    }}
+    case 'invoice.payment_succeeded': {{
+      const invoice = event.data.object as Stripe.Invoice;
+      await prisma.invoiceRecord.create({{
+        data: {{
+          invoiceId: invoice.id,
+          amountPaid: invoice.amount_paid,
+          currency: invoice.currency,
+          customerId: invoice.customer as string,
+        }}
+      }});
+      break;
+    }}
+  }}
+
+  // Mark event as processed in database transaction
+  await prisma.processedWebhookEvent.create({{
+    data: {{ eventId: event.id, eventType: event.type, processedAt: new Date() }}
+  }});
+
+  return res.status(200).json({{ received: true }});
+}});"""
+
+        # Domain 3: Custom Interactive SVG Charting Engine
+        elif scenario_id == 3:
+            category = "analytics_data_viz"
+            inst = f"Build an interactive SVG time-series area chart in {framework} with animated crosshair tooltips, dynamic date aggregation (daily/weekly), and linear gradient fill styled using {style}."
+            resp = f"""'use client';
+import React, {{ useState, useMemo }} from 'react';
+import {{ TrendingUp, Calendar }} from 'lucide-react';
+
+interface DataPoint {{
+  date: string;
+  value: number;
+}}
+
+const sampleData: DataPoint[] = [
+  {{ date: '2026-08-01', value: 12400 }},
+  {{ date: '2026-08-02', value: 14800 }},
+  {{ date: '2026-08-03', value: 13900 }},
+  {{ date: '2026-08-04', value: 18200 }},
+  {{ date: '2026-08-05', value: 21500 }},
+  {{ date: '2026-08-06', value: 19800 }},
+  {{ date: '2026-08-07', value: 26400 }},
+];
+
+export default function AnalyticsAreaChart_v{variant_id}() {{
+  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+  const [timeframe, setTimeframe] = useState<'7d' | '30d'>('7d');
+
+  const width = 600;
+  const height = 240;
+  const padding = {{ top: 20, right: 20, bottom: 30, left: 40 }};
+
+  const {{ points, pathD, areaD, maxValue, minValue }} = useMemo(() => {{
+    const vals = sampleData.map(d => d.value);
+    const max = Math.max(...vals);
+    const min = Math.min(...vals) * 0.9;
+    const chartW = width - padding.left - padding.right;
+    const chartH = height - padding.top - padding.bottom;
+
+    const computed = sampleData.map((d, idx) => {{
+      const x = padding.left + (idx / (sampleData.length - 1)) * chartW;
+      const y = padding.top + chartH - ((d.value - min) / (max - min)) * chartH;
+      return {{ x, y, ...d }};
+    }});
+
+    const linePath = computed.reduce((acc, p, i) => (i === 0 ? `M ${{p.x}} ${{p.y}}` : `${{acc}} L ${{p.x}} ${{p.y}}`), '');
+    const areaPath = `${{linePath}} L ${{computed[computed.length - 1].x}} ${{height - padding.bottom}} L ${{computed[0].x}} ${{height - padding.bottom}} Z`;
+
+    return {{ points: computed, pathD: linePath, areaD: areaPath, maxValue: max, minValue: min }};
+  }}, [width, height]);
+
+  const activePoint = hoverIndex !== null ? points[hoverIndex] : points[points.length - 1];
+
+  return (
+    <div className="max-w-2xl mx-auto p-6 bg-neutral-900 border border-neutral-800 rounded-3xl text-white space-y-6 shadow-xl">
+      <div className="flex justify-between items-center">
+        <div>
+          <span className="text-xs text-neutral-400 font-mono">Revenue Metric v{variant_id}</span>
+          <div className="flex items-baseline gap-2 mt-1">
+            <h3 className="text-3xl font-extrabold">${{activePoint.value.toLocaleString()}}</h3>
+            <span className="text-xs text-emerald-400 flex items-center font-semibold"><TrendingUp className="w-3.5 h-3.5 mr-0.5"/> +18.4%</span>
+          </div>
+        </div>
+
+        <div className="flex gap-1 bg-neutral-800 p-1 rounded-xl text-xs font-semibold">
+          <button onClick={{() => setTimeframe('7d')}} className={{`px-3 py-1 rounded-lg ${{timeframe === '7d' ? 'bg-{color}-500 text-neutral-950' : 'text-neutral-400 hover:text-white'}}`}}>
+            7 Days
+          </button>
+          <button onClick={{() => setTimeframe('30d')}} className={{`px-3 py-1 rounded-lg ${{timeframe === '30d' ? 'bg-{color}-500 text-neutral-950' : 'text-neutral-400 hover:text-white'}}`}}>
+            30 Days
+          </button>
+        </div>
+      </div>
+
+      <div className="relative">
+        <svg viewBox="0 0 600 240" className="w-full h-auto overflow-visible">
+          <defs>
+            <linearGradient id={{`chart-grad-v{variant_id}`}} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="var(--color-{color}-500, #10b981)" stopOpacity="0.4" />
+              <stop offset="100%" stopColor="var(--color-{color}-500, #10b981)" stopOpacity="0.0" />
+            </linearGradient>
+          </defs>
+
+          <line x1={{padding.left}} y1={{height - padding.bottom}} x2={{width - padding.right}} y2={{height - padding.bottom}} stroke="#262626" strokeWidth="1" />
+          <line x1={{padding.left}} y1={{padding.top}} x2={{width - padding.right}} y2={{padding.top}} stroke="#262626" strokeDasharray="3 3" strokeWidth="1" />
+
+          <path d={{areaD}} fill={{`url(#chart-grad-v{variant_id})`}} />
+          <path d={{pathD}} fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" />
+
+          {{points.map((p, idx) => (
+            <g key={{p.date}} onMouseEnter={{() => setHoverIndex(idx)}} onMouseLeave={{() => setHoverIndex(null)}}>
+              <circle cx={{p.x}} cy={{p.y}} r={{idx === hoverIndex ? 6 : 4}} className="fill-emerald-400 stroke-neutral-950 stroke-2 cursor-pointer transition-all" />
+              <rect x={{p.x - 15}} y={{0}} width={{30}} height={{height}} fill="transparent" className="cursor-pointer" />
+            </g>
+          ))}}
+        </svg>
+      </div>
+    </div>
+  );
+}}"""
+
+        # Domain 4: OAuth2 PKCE Authentication Flow
+        else:
+            category = "oauth2_pkce_auth"
+            inst = f"Write a pure TypeScript module implementing the OAuth2 PKCE (Proof Key for Code Exchange) authorization flow with cryptographically secure `code_verifier`, SHA-256 `code_challenge` generator, and token exchange."
+            resp = f"""// RFC 7636 OAuth2 PKCE Module for Single Page Applications & Edge Workers
+
+export interface PKCEPair {{
+  codeVerifier: string;
+  codeChallenge: string;
+}}
+
+export interface OAuthTokenResponse {{
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+  refresh_token?: string;
+  scope: string;
+}}
+
+export class PKCEAuthManager_v{variant_id} {{
+  /**
+   * Generates a cryptographically random 128-character code verifier
+   */
+  public static generateCodeVerifier(): string {{
+    const array = new Uint8Array(64);
+    if (typeof window !== 'undefined' && window.crypto) {{
+      window.crypto.getRandomValues(array);
+    }} else {{
+      const crypto = require('crypto');
+      crypto.randomFillSync(array);
+    }}
+    return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+  }}
+
+  /**
+   * Derives a Base64URL-encoded SHA-256 code challenge from the code verifier
+   */
+  public static async generateCodeChallenge(verifier: string): Promise<string> {{
+    const encoder = new TextEncoder();
+    const data = encoder.encode(verifier);
+    
+    let digest: ArrayBuffer;
+    if (typeof window !== 'undefined' && window.crypto?.subtle) {{
+      digest = await window.crypto.subtle.digest('SHA-256', data);
+    }} else {{
+      const crypto = require('crypto');
+      digest = crypto.createHash('sha256').update(data).digest();
+    }}
+
+    const base64 = typeof window !== 'undefined'
+      ? btoa(String.fromCharCode(...new Uint8Array(digest)))
+      : Buffer.from(digest).toString('base64');
+
+    return base64
+      .replace(/\\+/g, '-')
+      .replace(/\\//g, '_')
+      .replace(/=+$/, '');
+  }}
+
+  /**
+   * Builds the authorization redirect URL with PKCE parameters
+   */
+  public static async buildAuthUrl(options: {{
+    authEndpoint: string;
+    clientId: string;
+    redirectUri: string;
+    scope: string;
+    state: string;
+    codeChallenge: string;
+  }}): Promise<string> {{
+    const params = new URLSearchParams({{
+      response_type: 'code',
+      client_id: options.clientId,
+      redirect_uri: options.redirectUri,
+      scope: options.scope,
+      state: options.state,
+      code_challenge: options.codeChallenge,
+      code_challenge_method: 'S256',
+    }});
+
+    return `${{options.authEndpoint}}?${{params.toString()}}`;
+  }}
+
+  /**
+   * Exchanges the authorization code and code verifier for access tokens
+   */
+  public static async exchangeCodeForToken(options: {{
+    tokenEndpoint: string;
+    clientId: string;
+    code: string;
+    redirectUri: string;
+    codeVerifier: string;
+  }}): Promise<OAuthTokenResponse> {{
+    const body = new URLSearchParams({{
+      grant_type: 'authorization_code',
+      client_id: options.clientId,
+      code: options.code,
+      redirect_uri: options.redirectUri,
+      code_verifier: options.codeVerifier,
+    }});
+
+    const response = await fetch(options.tokenEndpoint, {{
+      method: 'POST',
+      headers: {{ 'Content-Type': 'application/x-www-form-urlencoded' }},
+      body: body.toString(),
+    }});
+
+    if (!response.ok) {{
+      const errBody = await response.text();
+      throw new Error(`Token exchange failed (${{response.status}}): ${{errBody}}`);
+    }}
+
+    return response.json();
+  }}
+}}"""
+
+        return inst, resp, category
+
+    variant_counter = 1
+    while len(results) < count_needed:
+        scenario_id = (variant_counter % 4) + 1
+        inst, resp, category = build_domain_pair(scenario_id, variant_counter)
+        variant_counter += 1
+        
+        r_hash = hashlib.md5(resp.strip().encode("utf-8")).hexdigest()
+        if r_hash not in seen_hashes:
+            seen_hashes.add(r_hash)
+            results.append({
+                "category": category,
+                "system": SYSTEM_PROMPT,
+                "instruction": inst,
+                "response": resp
+            })
+
+    print(f"   [+] Pipeline #6 generated {len(results):,} unique Domain-Specific task pairs!")
+    return results
+
 def generate_multi_source_dataset(target_samples: int = 50000, output_path: str = "data/vibe_training_dataset.json"):
     print("=" * 70)
     print(f"[START] VIBE CODER PHASE 1: Multi-Source Dataset Generator (Target: {target_samples:,} records)")
@@ -2568,6 +3049,23 @@ def generate_multi_source_dataset(target_samples: int = 50000, output_path: str 
             "response": resp,
             "text": formatted
         })
+
+    # Pipeline 5: Additional Domain Templates (Priority #6)
+    domain_target = min(2500, int(target_samples * 0.09))
+    domain_samples = generate_domain_specific_samples(count_needed=domain_target, seen_hashes=seen_response_hashes)
+    for sample in domain_samples:
+        resp = sample["response"].strip()
+        sys_p = sample.get("system", SYSTEM_PROMPT)
+        formatted = format_chatml(sys_p, sample["instruction"], resp)
+        records.append({
+            "id": len(records) + 1,
+            "category": sample["category"],
+            "system": sys_p,
+            "instruction": sample["instruction"],
+            "response": resp,
+            "text": formatted
+        })
+
 
 
         
