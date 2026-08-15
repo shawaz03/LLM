@@ -1447,6 +1447,637 @@ export async function getWorkspaceMembersWithRoles(workspaceId: string) {{
     print(f"   [+] Generated {len(results):,} unique Debug & Architecture pairs!")
     return results
 
+
+
+def format_multi_turn_chatml(system: str, turns: List[Dict[str, str]]) -> str:
+    text = f"<|im_start|>system\n{system.strip()}<|im_end|>\n"
+    for turn in turns:
+        role = turn["role"]
+        content = turn["content"].strip()
+        text += f"<|im_start|>{role}\n{content}<|im_end|>\n"
+    return text.strip()
+
+def validate_multi_turn_chatml(chatml_text: str) -> bool:
+    if not chatml_text.startswith("<|im_start|>system\n"): return False
+    if "<|im_end|>\n<|im_start|>user\n" not in chatml_text: return False
+    if "<|im_end|>\n<|im_start|>assistant\n" not in chatml_text: return False
+    if not chatml_text.endswith("<|im_end|>"): return False
+    user_count = chatml_text.count("<|im_start|>user\n")
+    asst_count = chatml_text.count("<|im_start|>assistant\n")
+    return user_count >= 2 and asst_count >= 2 and user_count == asst_count
+
+def generate_multi_turn_samples(count_needed: int, seen_hashes: set) -> List[Dict[str, Any]]:
+    print(f"\n[PIPELINE #4 - MULTI-TURN CONVERSATIONS] Generating {count_needed:,} interactive multi-turn developer workflows...")
+    results = []
+    
+    frameworks = ["React 19", "Next.js 15 App Router", "TypeScript", "Node.js Express", "TanStack Query", "Prisma ORM"]
+    styles = ["Tailwind CSS", "CSS Modules", "Glassmorphic Theme", "Modern Dark UI"]
+    colors = ['emerald', 'indigo', 'amber', 'rose', 'cyan', 'violet', 'teal']
+
+    def build_multi_turn_chain(scenario_id: int, variant_id: int) -> Tuple[List[Dict[str, str]], str]:
+        framework = frameworks[variant_id % len(frameworks)]
+        style = styles[variant_id % len(styles)]
+        color = colors[variant_id % len(colors)]
+        
+        # Scenario 1: Data Table with Search & CSV Export
+        if scenario_id == 1:
+            turns = [
+                {
+                    "role": "user",
+                    "content": f"Can you build a responsive data table in {framework} styled with {style} that includes pagination and column sorting?"
+                },
+                {
+                    "role": "assistant",
+                    "content": f"""'use client';
+import React, {{ useState, useMemo }} from 'react';
+import {{ ChevronUp, ChevronDown, ChevronLeft, ChevronRight }} from 'lucide-react';
+
+interface RowData {{
+  id: string;
+  name: string;
+  role: string;
+  status: 'active' | 'pending' | 'inactive';
+}}
+
+const initialData: RowData[] = [
+  {{ id: 'u-1', name: 'Alice Chen', role: 'Principal Architect', status: 'active' }},
+  {{ id: 'u-2', name: 'Marcus Brody', role: 'Frontend Engineer', status: 'pending' }},
+  {{ id: 'u-3', name: 'Elena Rostova', role: 'DevOps Lead', status: 'active' }},
+  {{ id: 'u-4', name: 'David Kim', role: 'Backend Developer', status: 'inactive' }},
+];
+
+export default function DataTable() {{
+  const [data, setData] = useState<RowData[]>(initialData);
+  const [sortField, setSortField] = useState<keyof RowData>('name');
+  const [sortAsc, setSortAsc] = useState<boolean>(true);
+  const [page, setPage] = useState<number>(1);
+  const pageSize = 2;
+
+  const handleSort = (field: keyof RowData) => {{
+    if (sortField === field) {{
+      setSortAsc(!sortAsc);
+    }} else {{
+      setSortField(field);
+      setSortAsc(true);
+    }}
+  }};
+
+  const sortedData = useMemo(() => {{
+    return [...data].sort((a, b) => {{
+      const valA = a[sortField];
+      const valB = b[sortField];
+      return sortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+    }});
+  }}, [data, sortField, sortAsc]);
+
+  const pagedData = sortedData.slice((page - 1) * pageSize, page * pageSize);
+  const totalPages = Math.ceil(data.length / pageSize);
+
+  return (
+    <div className="p-6 bg-neutral-900 border border-neutral-800 rounded-2xl text-white space-y-4 max-w-2xl mx-auto">
+      <div className="overflow-x-auto">
+        <table className="w-full text-left text-sm">
+          <thead className="border-b border-neutral-800 text-neutral-400 text-xs uppercase font-mono">
+            <tr>
+              <th className="py-3 px-4 cursor-pointer hover:text-white" onClick={{() => handleSort('name')}}>
+                <div className="flex items-center gap-1">Name {{sortField === 'name' && (sortAsc ? <ChevronUp className="w-3 h-3"/> : <ChevronDown className="w-3 h-3"/>)}}</div>
+              </th>
+              <th className="py-3 px-4 cursor-pointer hover:text-white" onClick={{() => handleSort('role')}}>
+                <div className="flex items-center gap-1">Role {{sortField === 'role' && (sortAsc ? <ChevronUp className="w-3 h-3"/> : <ChevronDown className="w-3 h-3"/>)}}</div>
+              </th>
+              <th className="py-3 px-4">Status</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-neutral-800/60">
+            {{pagedData.map(row => (
+              <tr key={{row.id}} className="hover:bg-neutral-800/40 transition">
+                <td className="py-3 px-4 font-medium">{{row.name}}</td>
+                <td className="py-3 px-4 text-neutral-400">{{row.role}}</td>
+                <td className="py-3 px-4">
+                  <span className={{`text-[10px] px-2 py-0.5 rounded-full font-mono ${{row.status === 'active' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-neutral-800 text-neutral-400'}}`}}>
+                    {{row.status}}
+                  </span>
+                </td>
+              </tr>
+            ))}}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="flex justify-between items-center pt-3 border-t border-neutral-800 text-xs text-neutral-400">
+        <span>Page {{page}} of {{totalPages}}</span>
+        <div className="flex gap-2">
+          <button disabled={{page === 1}} onClick={{() => setPage(p => p - 1)}} className="p-1.5 bg-neutral-800 rounded-lg hover:text-white disabled:opacity-40">
+            <ChevronLeft className="w-4 h-4"/>
+          </button>
+          <button disabled={{page === totalPages}} onClick={{() => setPage(p => p + 1)}} className="p-1.5 bg-neutral-800 rounded-lg hover:text-white disabled:opacity-40">
+            <ChevronRight className="w-4 h-4"/>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}}"""
+                },
+                {
+                    "role": "user",
+                    "content": "Now add a debounced search filter with real-time text matching and a button to export the filtered table results to a CSV file."
+                },
+                {
+                    "role": "assistant",
+                    "content": f"""'use client';
+import React, {{ useState, useMemo, useEffect }} from 'react';
+import {{ ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Search, Download }} from 'lucide-react';
+
+interface RowData {{
+  id: string;
+  name: string;
+  role: string;
+  status: 'active' | 'pending' | 'inactive';
+}}
+
+const initialData: RowData[] = [
+  {{ id: 'u-1', name: 'Alice Chen', role: 'Principal Architect', status: 'active' }},
+  {{ id: 'u-2', name: 'Marcus Brody', role: 'Frontend Engineer', status: 'pending' }},
+  {{ id: 'u-3', name: 'Elena Rostova', role: 'DevOps Lead', status: 'active' }},
+  {{ id: 'u-4', name: 'David Kim', role: 'Backend Developer', status: 'inactive' }},
+];
+
+export default function DataTableWithSearchAndExport() {{
+  const [data, setData] = useState<RowData[]>(initialData);
+  const [search, setSearch] = useState<string>('');
+  const [debouncedSearch, setDebouncedSearch] = useState<string>('');
+  const [sortField, setSortField] = useState<keyof RowData>('name');
+  const [sortAsc, setSortAsc] = useState<boolean>(true);
+  const [page, setPage] = useState<number>(1);
+  const pageSize = 2;
+
+  // Debounce search input by 300ms
+  useEffect(() => {{
+    const timer = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(timer);
+  }}, [search]);
+
+  const handleSort = (field: keyof RowData) => {{
+    if (sortField === field) {{
+      setSortAsc(!sortAsc);
+    }} else {{
+      setSortField(field);
+      setSortAsc(true);
+    }}
+  }};
+
+  const filteredData = useMemo(() => {{
+    if (!debouncedSearch.trim()) return data;
+    const q = debouncedSearch.toLowerCase();
+    return data.filter(d => d.name.toLowerCase().includes(q) || d.role.toLowerCase().includes(q) || d.status.toLowerCase().includes(q));
+  }}, [data, debouncedSearch]);
+
+  const sortedData = useMemo(() => {{
+    return [...filteredData].sort((a, b) => {{
+      const valA = a[sortField];
+      const valB = b[sortField];
+      return sortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+    }});
+  }}, [filteredData, sortField, sortAsc]);
+
+  const pagedData = sortedData.slice((page - 1) * pageSize, page * pageSize);
+  const totalPages = Math.max(1, Math.ceil(sortedData.length / pageSize));
+
+  const exportCSV = () => {{
+    const headers = ['ID', 'Name', 'Role', 'Status'];
+    const rows = sortedData.map(r => [r.id, r.name, r.role, r.status]);
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `table_export_${{variant_id}}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }};
+
+  return (
+    <div className="p-6 bg-neutral-900 border border-neutral-800 rounded-2xl text-white space-y-4 max-w-2xl mx-auto">
+      <div className="flex justify-between items-center gap-4">
+        <div className="relative flex-1">
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
+          <input
+            value={{search}}
+            onChange={{e => {{ setSearch(e.target.value); setPage(1); }}}}
+            placeholder="Search records..."
+            className="w-full pl-9 pr-4 py-2 bg-neutral-800 border border-neutral-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-{color}-500"
+          />
+        </div>
+        <button onClick={{exportCSV}} className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 rounded-xl text-xs font-medium flex items-center gap-1.5 transition">
+          <Download className="w-3.5 h-3.5 text-{color}-400" /> Export CSV
+        </button>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="w-full text-left text-sm">
+          <thead className="border-b border-neutral-800 text-neutral-400 text-xs uppercase font-mono">
+            <tr>
+              <th className="py-3 px-4 cursor-pointer hover:text-white" onClick={{() => handleSort('name')}}>
+                <div className="flex items-center gap-1">Name {{sortField === 'name' && (sortAsc ? <ChevronUp className="w-3 h-3"/> : <ChevronDown className="w-3 h-3"/>)}}</div>
+              </th>
+              <th className="py-3 px-4 cursor-pointer hover:text-white" onClick={{() => handleSort('role')}}>
+                <div className="flex items-center gap-1">Role {{sortField === 'role' && (sortAsc ? <ChevronUp className="w-3 h-3"/> : <ChevronDown className="w-3 h-3"/>)}}</div>
+              </th>
+              <th className="py-3 px-4">Status</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-neutral-800/60">
+            {{pagedData.map(row => (
+              <tr key={{row.id}} className="hover:bg-neutral-800/40 transition">
+                <td className="py-3 px-4 font-medium">{{row.name}}</td>
+                <td className="py-3 px-4 text-neutral-400">{{row.role}}</td>
+                <td className="py-3 px-4">
+                  <span className={{`text-[10px] px-2 py-0.5 rounded-full font-mono ${{row.status === 'active' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-neutral-800 text-neutral-400'}}`}}>
+                    {{row.status}}
+                  </span>
+                </td>
+              </tr>
+            ))}}
+            {{pagedData.length === 0 && (
+              <tr>
+                <td colSpan={{3}} className="py-6 text-center text-neutral-500 text-xs">No matching records found.</td>
+              </tr>
+            )}}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="flex justify-between items-center pt-3 border-t border-neutral-800 text-xs text-neutral-400">
+        <span>Showing {{pagedData.length}} of {{sortedData.length}} results (Page {{page}} of {{totalPages}})</span>
+        <div className="flex gap-2">
+          <button disabled={{page === 1}} onClick={{() => setPage(p => p - 1)}} className="p-1.5 bg-neutral-800 rounded-lg hover:text-white disabled:opacity-40">
+            <ChevronLeft className="w-4 h-4"/>
+          </button>
+          <button disabled={{page === totalPages}} onClick={{() => setPage(p => p + 1)}} className="p-1.5 bg-neutral-800 rounded-lg hover:text-white disabled:opacity-40">
+            <ChevronRight className="w-4 h-4"/>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}}"""
+                }
+            ]
+
+        # Scenario 2: JWT Auth -> Refresh Token Rotation
+        elif scenario_id == 2:
+            turns = [
+                {
+                    "role": "user",
+                    "content": f"Write an Express.js JWT login endpoint in {framework} with bcrypt password hashing."
+                },
+                {
+                    "role": "assistant",
+                    "content": f"""import express, {{ Request, Response }} from 'express';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+
+export const authRouter = express.Router();
+const JWT_SECRET = process.env.JWT_SECRET || 'secret_key_{variant_id}';
+
+// Mock user database
+const users = [
+  {{ id: 'u1', email: 'dev@vibe.io', passwordHash: '$2b$10$w8T0M4j6l8V9k1m0n2o3p4q5r6s7t8u9v0w1x2y3z' }}
+];
+
+authRouter.post('/login', async (req: Request, res: Response) => {{
+  const {{ email, password }} = req.body;
+  if (!email || !password) {{
+    return res.status(400).json({{ success: false, error: 'Email and password required' }});
+  }}
+
+  const user = users.find(u => u.email === email);
+  if (!user) {{
+    return res.status(401).json({{ success: false, error: 'Invalid credentials' }});
+  }}
+
+  const isValid = await bcrypt.compare(password, user.passwordHash);
+  if (!isValid) {{
+    return res.status(401).json({{ success: false, error: 'Invalid credentials' }});
+  }}
+
+  const token = jwt.sign({{ id: user.id, email: user.email }}, JWT_SECRET, {{ expiresIn: '15m' }});
+  return res.json({{ success: true, token }});
+}});"""
+                },
+                {
+                    "role": "user",
+                    "content": "Now add refresh token rotation with HTTP-only cookies and an authorization middleware guard to protect private endpoints."
+                },
+                {
+                    "role": "assistant",
+                    "content": f"""import express, {{ Request, Response, NextFunction }} from 'express';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import cookieParser from 'cookie-parser';
+
+export const authRouter = express.Router();
+authRouter.use(cookieParser());
+
+const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET || 'access_secret_{variant_id}';
+const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'refresh_secret_{variant_id}';
+
+// In-memory refresh token whitelist (use Redis in production)
+const activeRefreshTokens = new Set<string>();
+
+export interface AuthRequest extends Request {{
+  user?: {{ id: string; email: string }};
+}}
+
+export const authenticateToken = (req: AuthRequest, res: Response, next: NextFunction) => {{
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {{
+    return res.status(401).json({{ success: false, error: 'Access token required' }});
+  }}
+
+  jwt.verify(token, ACCESS_SECRET, (err, user) => {{
+    if (err) return res.status(403).json({{ success: false, error: 'Token invalid or expired' }});
+    req.user = user as {{ id: string; email: string }};
+    next();
+  }});
+}};
+
+authRouter.post('/login', async (req: Request, res: Response) => {{
+  const {{ email, password }} = req.body;
+  if (!email || !password) return res.status(400).json({{ error: 'Missing credentials' }});
+
+  const payload = {{ id: 'u1', email }};
+  const accessToken = jwt.sign(payload, ACCESS_SECRET, {{ expiresIn: '15m' }});
+  const refreshToken = jwt.sign(payload, REFRESH_SECRET, {{ expiresIn: '7d' }});
+
+  activeRefreshTokens.add(refreshToken);
+
+  res.cookie('refreshToken', refreshToken, {{
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 7 * 24 * 60 * 60 * 1000
+  }});
+
+  return res.json({{ success: true, accessToken, user: payload }});
+}});
+
+authRouter.post('/refresh', (req: Request, res: Response) => {{
+  const refreshToken = req.cookies.refreshToken;
+  if (!refreshToken || !activeRefreshTokens.has(refreshToken)) {{
+    return res.status(401).json({{ success: false, error: 'Invalid refresh session' }});
+  }}
+
+  jwt.verify(refreshToken, REFRESH_SECRET, (err: any, user: any) => {{
+    if (err) return res.status(403).json({{ success: false, error: 'Expired session' }});
+
+    // Invalidate previous refresh token (Rotation)
+    activeRefreshTokens.delete(refreshToken);
+
+    const newAccessToken = jwt.sign({{ id: user.id, email: user.email }}, ACCESS_SECRET, {{ expiresIn: '15m' }});
+    const newRefreshToken = jwt.sign({{ id: user.id, email: user.email }}, REFRESH_SECRET, {{ expiresIn: '7d' }});
+    activeRefreshTokens.add(newRefreshToken);
+
+    res.cookie('refreshToken', newRefreshToken, {{
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    }});
+
+    return res.json({{ success: true, accessToken: newAccessToken }});
+  }});
+}});
+
+authRouter.post('/logout', (req: Request, res: Response) => {{
+  const refreshToken = req.cookies.refreshToken;
+  if (refreshToken) activeRefreshTokens.delete(refreshToken);
+  res.clearCookie('refreshToken');
+  return res.json({{ success: true, message: 'Logged out successfully' }});
+}});"""
+                }
+            ]
+
+        # Scenario 3: TanStack Query -> Optimistic Mutation & Rollback
+        elif scenario_id == 3:
+            turns = [
+                {
+                    "role": "user",
+                    "content": f"How do I create a TanStack React Query v5 mutation hook for adding a project in {framework}?"
+                },
+                {
+                    "role": "assistant",
+                    "content": f"""import {{ useMutation, useQueryClient }} from '@tanstack/react-query';
+
+interface Project {{
+  id: string;
+  name: string;
+  status: 'active' | 'archived';
+}}
+
+async function createProjectApi(newProject: {{ name: string }}): Promise<Project> {{
+  const res = await fetch('/api/projects', {{
+    method: 'POST',
+    headers: {{ 'Content-Type': 'application/json' }},
+    body: JSON.stringify(newProject)
+  }});
+  if (!res.ok) throw new Error('Failed to create project');
+  return res.json();
+}}
+
+export function useCreateProject() {{
+  const queryClient = useQueryClient();
+
+  return useMutation({{
+    mutationFn: createProjectApi,
+    onSuccess: (data) => {{
+      queryClient.invalidateQueries({{ queryKey: ['projects'] }});
+    }}
+  }});
+}}"""
+                },
+                {
+                    "role": "user",
+                    "content": "Can you upgrade this hook to support optimistic updates so the UI updates immediately, with a clean rollback snapshot if the server request fails?"
+                },
+                {
+                    "role": "assistant",
+                    "content": f"""import {{ useMutation, useQueryClient }} from '@tanstack/react-query';
+
+interface Project {{
+  id: string;
+  name: string;
+  status: 'active' | 'archived';
+}}
+
+interface MutationContext {{
+  previousProjects: Project[] | undefined;
+}}
+
+async function createProjectApi(newProject: {{ name: string }}): Promise<Project> {{
+  const res = await fetch('/api/projects', {{
+    method: 'POST',
+    headers: {{ 'Content-Type': 'application/json' }},
+    body: JSON.stringify(newProject)
+  }});
+  if (!res.ok) throw new Error('Failed to create project on server');
+  return res.json();
+}}
+
+export function useOptimisticCreateProject() {{
+  const queryClient = useQueryClient();
+
+  return useMutation<Project, Error, {{ name: string }}, MutationContext>({{
+    mutationFn: createProjectApi,
+    onMutate: async (newProject) => {{
+      // 1. Cancel any outgoing refetches to prevent overwriting optimistic state
+      await queryClient.cancelQueries({{ queryKey: ['projects'] }});
+
+      // 2. Snapshot previous cache value for rollback
+      const previousProjects = queryClient.getQueryData<Project[]>(['projects']);
+
+      // 3. Optimistically insert new item with temporary ID
+      const optimisticProject: Project = {{
+        id: `temp-${{Date.now()}}-{variant_id}`,
+        name: newProject.name,
+        status: 'active'
+      }};
+
+      queryClient.setQueryData<Project[]>(['projects'], (old = []) => [...old, optimisticProject]);
+
+      // 4. Return context object with snapshot
+      return {{ previousProjects }};
+    }},
+    onError: (err, newProject, context) => {{
+      // Rollback cache to previous snapshot on error
+      if (context?.previousProjects) {{
+        queryClient.setQueryData(['projects'], context.previousProjects);
+      }}
+    }},
+    onSettled: () => {{
+      // Always invalidate queries to sync latest server truth
+      queryClient.invalidateQueries({{ queryKey: ['projects'] }});
+    }}
+  }});
+}}"""
+                }
+            ]
+
+        # Scenario 4: Dark/Light Mode Theme -> SSR Hydration Fix
+        else:
+            turns = [
+                {
+                    "role": "user",
+                    "content": f"Build a Dark / Light mode theme toggle button in {framework} with {style} using localStorage."
+                },
+                {
+                    "role": "assistant",
+                    "content": f"""'use client';
+import React, {{ useState }} from 'react';
+import {{ Sun, Moon }} from 'lucide-react';
+
+export default function ThemeToggle() {{
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {{
+    if (typeof window !== 'undefined') {{
+      return (localStorage.getItem('theme_{variant_id}') as 'light' | 'dark') || 'dark';
+    }}
+    return 'dark';
+  }});
+
+  const toggle = () => {{
+    const next = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    localStorage.setItem('theme_{variant_id}', next);
+    document.documentElement.classList.toggle('dark', next === 'dark');
+  }};
+
+  return (
+    <button onClick={{toggle}} className="p-2 bg-neutral-900 border border-neutral-800 rounded-full text-white">
+      {{theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-400" />}}
+    </button>
+  );
+}}"""
+                },
+                {
+                    "role": "user",
+                    "content": "This is causing a Next.js hydration mismatch warning: 'Text content does not match server-rendered HTML'. How do I fix this cleanly and add system color scheme auto-detection?"
+                },
+                {
+                    "role": "assistant",
+                    "content": f"""'use client';
+import React, {{ useState, useEffect }} from 'react';
+import {{ Sun, Moon }} from 'lucide-react';
+
+export default function HydrationSafeThemeToggle() {{
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [mounted, setMounted] = useState<boolean>(false);
+
+  useEffect(() => {{
+    setMounted(true);
+    const saved = localStorage.getItem('theme_{variant_id}') as 'light' | 'dark' | null;
+    if (saved) {{
+      setTheme(saved);
+      document.documentElement.classList.toggle('dark', saved === 'dark');
+    }} else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {{
+      setTheme('dark');
+      document.documentElement.classList.add('dark');
+    }}
+  }}, []);
+
+  const toggle = () => {{
+    const next = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    localStorage.setItem('theme_{variant_id}', next);
+    document.documentElement.classList.toggle('dark', next === 'dark');
+  }};
+
+  // Prevent hydration mismatch by rendering neutral skeleton until mounted
+  if (!mounted) {{
+    return (
+      <div className="w-9 h-9 rounded-full bg-neutral-900 border border-neutral-800 animate-pulse" />
+    );
+  }}
+
+  return (
+    <button
+      onClick={{toggle}}
+      aria-label="Toggle theme"
+      className="p-2.5 rounded-full bg-neutral-900 border border-neutral-800 hover:border-{color}-500/50 transition-all text-neutral-200 hover:text-white shadow-sm"
+    >
+      {{theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-400" />}}
+    </button>
+  );
+}}"""
+                }
+            ]
+
+        chatml_text = format_multi_turn_chatml(SYSTEM_PROMPT, turns)
+        return turns, chatml_text
+
+    variant_counter = 1
+    while len(results) < count_needed:
+        scenario_id = (variant_counter % 4) + 1
+        turns, chatml = build_multi_turn_chain(scenario_id, variant_counter)
+        variant_counter += 1
+        
+        h = hashlib.md5(chatml.encode("utf-8")).hexdigest()
+        if h not in seen_hashes:
+            seen_hashes.add(h)
+            results.append({
+                "category": "multi_turn_dialogue",
+                "system": SYSTEM_PROMPT,
+                "instruction": turns[0]["content"],
+                "response": turns[-1]["content"],
+                "turns": turns,
+                "text": chatml
+            })
+
+    print(f"   [+] Pipeline #4 generated {len(results):,} unique Multi-Turn Dialogue chains!")
+    return results
+
 def generate_multi_source_dataset(target_samples: int = 50000, output_path: str = "data/vibe_training_dataset.json"):
     print("=" * 70)
     print(f"[START] VIBE CODER PHASE 1: Multi-Source Dataset Generator (Target: {target_samples:,} records)")
@@ -1502,6 +2133,21 @@ def generate_multi_source_dataset(target_samples: int = 50000, output_path: str 
             "response": resp,
             "text": formatted
         })
+
+    # Pipeline 3: Multi-Turn Conversational Chains (Priority #4)
+    multi_turn_target = min(2000, int(target_samples * 0.08))
+    multi_turn_samples = generate_multi_turn_samples(count_needed=multi_turn_target, seen_hashes=seen_response_hashes)
+    for sample in multi_turn_samples:
+        records.append({
+            "id": len(records) + 1,
+            "category": sample["category"],
+            "system": sample["system"],
+            "instruction": sample["instruction"],
+            "response": sample["response"],
+            "turns": sample.get("turns", []),
+            "text": sample["text"]
+        })
+
         
     remaining = target_samples - len(records)
     if remaining > 0:
