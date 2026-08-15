@@ -133,16 +133,26 @@ def main():
     tokenizer.save_pretrained(output_lora_dir)
     print(f"   [+] LoRA adapter saved successfully.")
 
-    # 9. Optional: Export GGUF for Local Inference (Ollama / llama.cpp)
+    # 9. Export GGUF for Local Inference (Ollama / llama.cpp)
     try:
-        print("\n[BONUS] Exporting quantized GGUF model for local inference...")
+        print("\n[5b/5] Exporting quantized GGUF model for local inference...")
         model.save_pretrained_gguf("models/vibe_coder_7b_gguf", tokenizer, quantization_method="q4_k_m")
         print("   [+] GGUF model exported to models/vibe_coder_7b_gguf!")
     except Exception as e:
         print(f"   [!] GGUF export note: {e}")
 
+    # 10. Optional: Push to Hugging Face Hub if token available
+    hf_token = os.environ.get("HF_TOKEN") or (sys.argv[1] if len(sys.argv) > 1 and sys.argv[1].startswith("hf_") else None)
+    if hf_token:
+        try:
+            print("\n[6/5] Pushing LoRA weights directly to Hugging Face Hub...")
+            model.push_to_hub_merged("shawaz03/vibe-coder-7b-lora", tokenizer, save_method="lora", token=hf_token)
+            print("   [+] Successfully pushed LoRA adapter to https://huggingface.co/shawaz03/vibe-coder-7b-lora!")
+        except Exception as e:
+            print(f"   [!] Hugging Face Hub push note: {e}")
+
     print("\n" + "=" * 70)
-    print("🎉 ALL DONE! Your fine-tuned Vibe Coder 7B model is ready to deploy.")
+    print("🎉 ALL DONE! Your fine-tuned Vibe Coder 7B model is trained and ready.")
     print("=" * 70)
 
 if __name__ == "__main__":
