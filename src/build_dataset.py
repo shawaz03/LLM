@@ -81,8 +81,110 @@ def validate_sample(item: Dict[str, Any]) -> bool:
     if text and not validate_chatml_structure(text): return False
     return True
 
-def fetch_open_source_datasets(target_count: int = 50000, seen_hashes: set = None) -> List[Dict[str, Any]]:
-    return []
+STUB_REGEX = re.compile(
+    r'(//|/\*|#)\s*(implement|todo|fill\s+in|write\s+logic|your\s+code\s+here|add\s+logic|fixme|rest\s+of|add\s+more\s+here)',
+    re.IGNORECASE
+)
+
+WEB_POSITIVE = re.compile(
+    r'\b(typescript|tsx|javascript|jsx|react|next\.?js|node\.?js|express|hono|prisma|tailwind|css|html|zustand|tanstack|zod|graphql|sql|postgres|jwt|websocket|vite|redux|formik|styled-components|lucide|postcss)\b',
+    re.IGNORECASE
+)
+
+NON_WEB_NEGATIVE = re.compile(
+    r'\b(python|def\s+[a-zA-Z_]|import\s+torch|import\s+numpy|import\s+pandas|c\+\+|c#|\.net|java\b(?!script)|assembly|x86|arm64|cobol|fortran|rust\b|golang|swift\b|kotlin|flutter|dart\b|solidity|smart contract|pytorch|tensorflow|keras|pandas|scikit-learn|matplotlib|seaborn|django|flask|fastapi|ruby|php\b|laravel|jqbootstrapvalidation)\b',
+    re.IGNORECASE
+)
+
+def is_ultra_clean_web_sample(instruction: str, response: str) -> bool:
+    comb = (instruction + " " + response).lower()
+    if len(instruction.strip()) < 10 or len(instruction) > 3000:
+        return False
+    if len(response.strip()) < 150 or len(response) > 12000:
+        return False
+    if STUB_REGEX.search(response):
+        return False
+    if NON_WEB_NEGATIVE.search(comb):
+        return False
+    if not WEB_POSITIVE.search(comb):
+        return False
+    if re.search(r'\bvar\s+[a-zA-Z0-9_]+\s*=', response) and 'const ' not in response and 'let ' not in response:
+        return False
+    return True
+
+def fetch_open_source_datasets(target_count: int = 8000, seen_hashes: set = None) -> List[Dict[str, Any]]:
+    print(f"\n[PIPELINE #1 - CURATED OSS] Fetching up to {target_count:,} real-world web stack samples from Hugging Face...")
+    if seen_hashes is None:
+        seen_hashes = set()
+    
+    extracted = []
+    try:
+        from huggingface_hub import hf_hub_download
+    except ImportError:
+        print("   [!] huggingface_hub not installed. Skipping remote OSS fetch.")
+        return extracted
+        
+    sources = [
+        ("ise-uiuc/Magicoder-OSS-Instruct-75K", "data-oss_instruct-decontaminated.jsonl", "jsonl", 3000),
+        ("TokenBender/code_instructions_122k_alpaca_style", "code_instructions_120k.json", "json", 3000),
+        ("sahil2801/CodeAlpaca-20k", "code_alpaca_20k.json", "json", 2000),
+    ]
+    
+    for repo_id, filename, filetype, max_from_repo in sources:
+        if len(extracted) >= target_count:
+            break
+        print(f"   --> Loading from {repo_id} ({filename})...")
+        try:
+            local_path = hf_hub_download(repo_id=repo_id, filename=filename, repo_type="dataset")
+            count_repo = 0
+            if filetype == "jsonl":
+                with open(local_path, "r", encoding="utf-8") as f:
+                    for line in f:
+                        if not line.strip(): continue
+                        item = json.loads(line)
+                        inst = item.get("problem", item.get("instruction", ""))
+                        resp = item.get("solution", item.get("response", ""))
+                        if is_ultra_clean_web_sample(inst, resp):
+                            h = hashlib.md5(resp.strip().encode("utf-8")).hexdigest()
+                            if h not in seen_hashes:
+                                seen_hashes.add(h)
+                                extracted.append({
+                                    "instruction": inst.strip(),
+                                    "response": resp.strip(),
+                                    "category": "open_source_web",
+                                    "system": SYSTEM_PROMPT
+                                })
+                                count_repo += 1
+                                if count_repo >= max_from_repo or len(extracted) >= target_count:
+                                    break
+            elif filetype == "json":
+                with open(local_path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    for item in data:
+                        inst = item.get("instruction", "")
+                        inp = item.get("input", "")
+                        if inp and inp.strip() not in ["Not applicable", "none", "N/A"]:
+                            inst = f"{inst}\n\nContext:\n{inp}"
+                        resp = item.get("output", item.get("response", ""))
+                        if is_ultra_clean_web_sample(inst, resp):
+                            h = hashlib.md5(resp.strip().encode("utf-8")).hexdigest()
+                            if h not in seen_hashes:
+                                seen_hashes.add(h)
+                                extracted.append({
+                                    "instruction": inst.strip(),
+                                    "response": resp.strip(),
+                                    "category": "open_source_web",
+                                    "system": SYSTEM_PROMPT
+                                })
+                                count_repo += 1
+                                if count_repo >= max_from_repo or len(extracted) >= target_count:
+                                    break
+            print(f"       [+] Extracted {count_repo:,} verified web samples from {repo_id}")
+        except Exception as e:
+            print(f"       [!] Warning: Failed to process {repo_id}: {e}")
+            
+    print(f"   [+] Pipeline #1 total extracted: {len(extracted):,} genuine OSS web samples!")
+    return extracted
 
 def generate_combinatorial_web_samples(count_needed: int, seen_hashes: set) -> List[Dict[str, Any]]:
     print(f"\n[STEP 1.6 & 1.9] Generating {count_needed:,} genuinely diverse, unique web-stack task pairs...")
@@ -565,6 +667,22 @@ def generate_multi_source_dataset(target_samples: int = 50000, output_path: str 
         records.append({
             "id": len(records) + 1,
             "category": sample["category"],
+            "system": sys_p,
+            "instruction": sample["instruction"],
+            "response": resp,
+            "text": formatted
+        })
+        
+    # Pipeline 1: Curated Open-Source Web Datasets (Magicoder, TokenBender, CodeAlpaca)
+    oss_target = min(8000, int(target_samples * 0.35))
+    oss_samples = fetch_open_source_datasets(target_count=oss_target, seen_hashes=seen_response_hashes)
+    for sample in oss_samples:
+        resp = sample["response"].strip()
+        sys_p = sample.get("system", SYSTEM_PROMPT)
+        formatted = format_chatml(sys_p, sample["instruction"], resp)
+        records.append({
+            "id": len(records) + 1,
+            "category": sample.get("category", "open_source_web"),
             "system": sys_p,
             "instruction": sample["instruction"],
             "response": resp,
